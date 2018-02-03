@@ -1,5 +1,6 @@
 [![release](https://img.shields.io/github/release/getnamo/BLUI.svg?style=flat-square)](https://github.com/getnamo/BLUI/releases)
 ![BLUI-logo](https://cloud.githubusercontent.com/assets/1334174/5969395/201a1202-a7f1-11e4-98a4-12bc6793f830.png)
+[![Github All Releases](https://img.shields.io/github/downloads/getnamo/BLUI/total.svg)](https://github.com/getnamo/BLUI/releases)
 
 ## Getnamo Fork Notes
 
