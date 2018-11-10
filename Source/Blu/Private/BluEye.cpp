@@ -1,3 +1,4 @@
+#include "BluEye.h"
 #include "BluPrivatePCH.h"
 #include "RenderHandler.h"
 

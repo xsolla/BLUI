@@ -17,8 +17,7 @@ THIRD_PARTY_INCLUDES_END
 #include "HideWindowsPlatformTypes.h"
 #endif
 
-#include "../Public/BluEye.h"
-
+#include "BluEye.h"
 
 class RenderHandler : public CefRenderHandler
 {

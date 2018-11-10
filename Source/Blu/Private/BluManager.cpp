@@ -1,3 +1,4 @@
+#include "BluManager.h"
 #include "BluPrivatePCH.h"
 
 BluManager::BluManager()

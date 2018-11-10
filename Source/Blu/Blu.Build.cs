@@ -15,12 +15,14 @@ public class Blu : ModuleRules
 	{
 		foreach (var f in filesToStage)
 		{
-			RuntimeDependencies.Add(new RuntimeDependency(f));
+			RuntimeDependencies.Add(f);
 		}
 	}
 
 	public Blu(ReadOnlyTargetRules Target) : base(Target)
 	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		PrivatePCHHeaderFile = "Private/BluPrivatePCH.h";
 
 		PublicDependencyModuleNames.AddRange(
 			new string[]
