@@ -41,7 +41,7 @@ public class Blu : ModuleRules
 
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"Blu/Private",
+				Path.Combine(ModuleDirectory, "Private"),
 			});
 
 		if(Target.Platform == UnrealTargetPlatform.Win64)
