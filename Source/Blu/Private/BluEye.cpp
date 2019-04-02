@@ -139,9 +139,8 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 		RegionData->Regions = updateRegions;
 
 
-		ENQUEUE_UNIQUE_RENDER_COMMAND_ONEPARAMETER(
-			void,
-			FUpdateTextureRegionsData*, RegionData, RegionData,
+		ENQUEUE_RENDER_COMMAND(UpdateBLUICommand)(
+			[RegionData](FRHICommandList& CommandList)
 			{
 				for (uint32 RegionIndex = 0; RegionIndex < RegionData->NumRegions; RegionIndex++)
 				{
