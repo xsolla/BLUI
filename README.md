@@ -68,7 +68,7 @@ Instead of ticking in your level bp, I prefer to use a simple actor to do the ti
 
 ## Demo Project
 
-Thanks to @oivio we have the Demo project updated to the latest release. See https://github.com/getnamo/BLUI/releases/tag/3.4.0 for the 4.22 Demo project release (BLUI-v3.4.0-UE4.22-DemoExamples.7z)
+Thanks to @oivio we have the Demo project updated to the latest release. See https://github.com/getnamo/BLUI/releases/tag/3.4.0 for the 4.22 Demo project release ([BLUI-v3.4.0-UE4.22-DemoExamples.7z](https://github.com/getnamo/BLUI/releases/download/3.4.0/BLUI-v3.4.0-UE4.22-DemoExamples.7z))
 
 ### Video of Demo project
 
