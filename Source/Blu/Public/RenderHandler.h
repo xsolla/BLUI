@@ -28,7 +28,7 @@ class RenderHandler : public CefRenderHandler
 		int32 Height;
 
 		// CefRenderHandler interface
-		bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
+		virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
 		void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height) override;
 
@@ -76,7 +76,8 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 			return this;
 		}
 
-		virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) override;
+		virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) override;
+
 		void SetEventEmitter(FScriptEvent* emitter);
 
 		//CefDownloadHandler
@@ -102,8 +103,8 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 			CefWindowInfo& windowInfo,
 			CefRefPtr<CefClient>& client,
 			CefBrowserSettings& settings,
-			bool* no_javascript_access) override
-		{
+			CefRefPtr<CefDictionaryValue>& extra_info,
+			bool* no_javascript_access) {
 			return false;
 		}
 
