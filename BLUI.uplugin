@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"FriendlyName": "BLUI",
 	"Version": 3,
-	"VersionName": "3.5.0",
+	"VersionName": "3.6.0",
 	"Description": "Chromium Embedded Framework (CEF) powered HTML UI and HUD for Unreal Engine 4",
 	"Category": "UI",
 	"CreatedBy": "Aaron M. Shea & Contributors",
@@ -16,13 +16,13 @@
 			"Name" : "BluLoader",
 			"Type" : "Runtime",
 			"LoadingPhase" : "PreDefault",
-			"BlacklistPlatforms" : [ "HTML5", "Android", "iOS"]
+			"BlacklistPlatforms" :  ["Android", "iOS"]
 		},
 		{
 			"Name": "Blu",
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
-			"BlacklistPlatforms": [ "HTML5", "Android", "iOS" ]
+			"BlacklistPlatforms": ["Android", "iOS" ]
 		}
 	]
 }
