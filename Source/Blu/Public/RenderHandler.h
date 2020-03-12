@@ -1,23 +1,23 @@
 #pragma once
 
+#include "BluEye.h"
+
 #if PLATFORM_WINDOWS
 #include "WindowsHWrapper.h"
 #include "AllowWindowsPlatformTypes.h"
 #include "AllowWindowsPlatformAtomics.h"
 #endif
-#pragma push_macro("OVERRIDE")
-#undef OVERRIDE // cef headers provide their own OVERRIDE macro
+//#pragma push_macro("OVERRIDE")
+//#undef OVERRIDE // cef headers provide their own OVERRIDE macro
 THIRD_PARTY_INCLUDES_START
 #include "include/cef_client.h"
 #include "include/cef_app.h"
 THIRD_PARTY_INCLUDES_END
-#pragma pop_macro("OVERRIDE")
+//#pragma pop_macro("OVERRIDE")
 #if PLATFORM_WINDOWS
 #include "HideWindowsPlatformAtomics.h"
 #include "HideWindowsPlatformTypes.h"
 #endif
-
-#include "BluEye.h"
 
 class RenderHandler : public CefRenderHandler
 {
@@ -37,7 +37,7 @@ class RenderHandler : public CefRenderHandler
 		// CefBase interface
 		// NOTE: Must be at bottom
 	public:
-		IMPLEMENT_REFCOUNTING(RenderHandler)
+		IMPLEMENT_REFCOUNTING(RenderHandler);
 };
 
 // for manual render handler
@@ -114,5 +114,7 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 
 		// NOTE: Must be at bottom
 	public:
-		IMPLEMENT_REFCOUNTING(BrowserClient)
+		IMPLEMENT_REFCOUNTING(BrowserClient);
 };
+
+

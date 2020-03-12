@@ -46,7 +46,7 @@ void UBluEye::init()
 	info.height = Height;
 
 	// Set transparant option
-	info.SetAsWindowless(0, bIsTransparent);
+	info.SetAsWindowless(0); //bIsTransparent
 
 	// Figure out if we want to turn on WebGL support
 	if (bEnableWebGL)
@@ -60,7 +60,14 @@ void UBluEye::init()
 
 	renderer = new RenderHandler(Width, Height, this);
 	g_handler = new BrowserClient(renderer);
-	browser = CefBrowserHost::CreateBrowserSync(info, g_handler.get(), "about:blank", browserSettings, NULL);
+	//browser = CefBrowserHost::CreateBrowserSync(info, g_handler.get(), "about:blank", browserSettings, NULL);
+	browser = CefBrowserHost::CreateBrowserSync(
+		info,
+		g_handler.get(),
+		"about:blank",
+		browserSettings,
+		NULL,
+		NULL);
 
 	// Setup JS event emitter
 	g_handler->SetEventEmitter(&ScriptEventEmitter);
