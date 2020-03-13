@@ -21,7 +21,7 @@ struct FUpdateTextureRegionsData
 	FUpdateTextureRegion2D * Regions;
 	uint32 SrcPitch;
 	uint32 SrcBpp;
-	uint8 * SrcData;
+	TArray<uint8> SrcData;
 };
 
 UENUM(BlueprintType)

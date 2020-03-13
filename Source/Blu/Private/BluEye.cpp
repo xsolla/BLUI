@@ -135,15 +135,21 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 		{
 			UE_LOG(LogBlu, Warning, TEXT("NO TEXTDATA"))
 				return;
-		}	
+		}
+		
 	 
 		FUpdateTextureRegionsData * RegionData = new FUpdateTextureRegionsData;
 		RegionData->Texture2DResource = (FTexture2DResource*)Texture->Resource;
 		RegionData->NumRegions = regionCount;
 		RegionData->SrcBpp = 4;
 		RegionData->SrcPitch = Width * 4;
-		RegionData->SrcData = (uint8*)buffer;
+
+		//We need to copy this memory or it might get uninitialized
+		RegionData->SrcData.SetNumUninitialized(RegionData->SrcPitch * Height);
+		FPlatformMemory::Memcpy(RegionData->SrcData.GetData(), buffer, RegionData->SrcData.Num());
 		RegionData->Regions = updateRegions;
+
+		
 
 
 		ENQUEUE_RENDER_COMMAND(UpdateBLUICommand)(
@@ -152,7 +158,7 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 				for (uint32 RegionIndex = 0; RegionIndex < RegionData->NumRegions; RegionIndex++)
 				{
 					
-					RHIUpdateTexture2D(RegionData->Texture2DResource->GetTexture2DRHI(), 0, RegionData->Regions[RegionIndex], RegionData->SrcPitch, RegionData->SrcData
+					RHIUpdateTexture2D(RegionData->Texture2DResource->GetTexture2DRHI(), 0, RegionData->Regions[RegionIndex], RegionData->SrcPitch, RegionData->SrcData.GetData()
 						+ RegionData->Regions[RegionIndex].SrcY * RegionData->SrcPitch
 						+ RegionData->Regions[RegionIndex].SrcX * RegionData->SrcBpp);
 				}
