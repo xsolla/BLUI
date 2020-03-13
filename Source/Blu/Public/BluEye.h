@@ -297,4 +297,6 @@ private:
 
 	FBluTextureParams RenderParams;
 
+	FThreadSafeBool bValidTexture;
+
 };

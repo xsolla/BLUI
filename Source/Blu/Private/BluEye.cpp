@@ -42,6 +42,8 @@ void UBluEye::init()
 	browserSettings.universal_access_from_file_urls = STATE_ENABLED;
 	browserSettings.file_access_from_file_urls = STATE_ENABLED;
 
+	browserSettings.web_security = STATE_DISABLED;
+
 	info.width = Width;
 	info.height = Height;
 
@@ -99,11 +101,12 @@ void UBluEye::ResetTexture()
 
 	ResetMatInstance();
 
+	bValidTexture = true;
 }
 
 void UBluEye::DestroyTexture()
 {
-	// Here we destory the texture and its resource
+	// Here we destroy the texture and its resource
 	if (Texture)
 	{
 		Texture->RemoveFromRoot();
@@ -116,6 +119,7 @@ void UBluEye::DestroyTexture()
 
 		Texture->MarkPendingKill();
 		Texture = nullptr;
+		bValidTexture = false;
 	}
 }
 
@@ -128,7 +132,7 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 	}
 
 	//todo: remove debug address hack
-	if (Texture && (int64)Texture != 0xdddddddddddddddd && Texture->IsValidLowLevel() && Texture->Resource)
+	if (bValidTexture)
 	{
 
 		if (buffer == nullptr)
@@ -320,9 +324,13 @@ UTexture2D* UBluEye::ResizeBrowser(const int32 NewWidth, const int32 NewHeight)
 	renderer->Width = NewWidth;
 	renderer->Height = NewHeight;
 
+	bValidTexture = false;
+
 	Texture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
 	Texture->AddToRoot();
 	Texture->UpdateResource();
+
+	bValidTexture = true;
 
 	// Let the browser's host know we resized it
 	browser->GetHost()->WasResized();
@@ -350,9 +358,13 @@ UTexture2D* UBluEye::CropWindow(const int32 Y, const int32 X, const int32 NewWid
 	renderer->Width = NewWidth;
 	renderer->Height = NewHeight;
 
+	bValidTexture = false;
+
 	Texture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
 	Texture->AddToRoot();
 	Texture->UpdateResource();
+
+	bValidTexture = true;
 
 	// Now we can keep going
 	bEnabled = true;
@@ -582,7 +594,7 @@ UTexture2D* UBluEye::GetTexture() const
 {
 	if (!Texture)
 	{
-		return UTexture2D::CreateTransient(Width, Height);
+		return UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
 	}
 
 	return Texture;
@@ -621,7 +633,7 @@ void UBluEye::ResetMatInstance()
 		return;
 	}
 
-	MaterialInstance->SetTextureParameterValue(TextureParameterName, GetTexture());
+	MaterialInstance->SetTextureParameterValue(TextureParameterName, Texture);
 }
 
 void UBluEye::CloseBrowser()
