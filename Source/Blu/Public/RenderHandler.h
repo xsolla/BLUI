@@ -112,6 +112,8 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 		void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
 		void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
+		CefRefPtr<CefBrowser> GetCEFBrowser();
+
 		// NOTE: Must be at bottom
 	public:
 		IMPLEMENT_REFCOUNTING(BrowserClient);

@@ -47,6 +47,36 @@ enum EBluSpecialKeys
 	unknownkey = 0,
 };
 
+
+USTRUCT(BlueprintType)
+struct FBluEyeSettings
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BluSettings")
+	float FrameRate;
+
+	/** Should this be rendered in game to be transparent? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
+	bool bIsTransparent;
+
+	/** Width of the view resolution */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
+	int32 Width;
+
+	/** Height of the view resolution */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
+	int32 Height;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
+	bool bEnableWebGL;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
+	bool bAudioMuted;
+
+	FBluEyeSettings();
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDownloadCompleteSignature, FString, url);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDownloadUpdatedSignature, FString, url, float, percentage);
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDownloadComplete);
@@ -81,20 +111,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
 	bool bEnabled;
 
-	/** Should this be rendered in game to be transparent? */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
-	bool bIsTransparent;
-
-	/** Width of the view resolution */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
-	int32 Width;
-
-	/** Height of the view resolution */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
-	int32 Height;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
-	bool bEnableWebGL;
+	FBluEyeSettings Settings;
 
 	/** Material that will be instanced to load UI texture into it */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")

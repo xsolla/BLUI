@@ -53,6 +53,11 @@ void BrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 	}
 }
 
+CefRefPtr<CefBrowser> BrowserClient::GetCEFBrowser()
+{
+	return m_Browser;
+}
+
 bool BrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message)
 {
 	FString data;

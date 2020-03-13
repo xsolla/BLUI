@@ -2,17 +2,23 @@
 #include "BluPrivatePCH.h"
 #include "RenderHandler.h"
 
-UBluEye::UBluEye(const class FObjectInitializer& PCIP)
-	: Super(PCIP)
+FBluEyeSettings::FBluEyeSettings()
 {
-	Texture = nullptr;
+	FrameRate = 60.f;
 
 	Width = 800;
 	Height = 600;
 
 	bIsTransparent = false;
-	bEnableWebGL = false;
+	bEnableWebGL = true;
+	bAudioMuted = false;
+}
 
+UBluEye::UBluEye(const class FObjectInitializer& PCIP)
+	: Super(PCIP)
+{
+	Texture = nullptr;
+	bValidTexture = false;
 }
 
 void UBluEye::init()
@@ -20,9 +26,8 @@ void UBluEye::init()
 
 	/** 
 	 * We don't want this running in editor unless it's PIE
-	 * If we don't check this, CEF will spawn infinit processes with widget components
+	 * If we don't check this, CEF will spawn infinite processes with widget components
 	 **/
-	Texture = nullptr;
 
 	if (GEngine)
 	{
@@ -33,7 +38,7 @@ void UBluEye::init()
 		}
 	}
 	
-	if (Width <= 0 || Height <= 0)
+	if (Settings.Width <= 0 || Settings.Height <= 0)
 	{
 		UE_LOG(LogBlu, Log, TEXT("Can't initialize when Width or Height are <= 0"));
 		return;
@@ -44,14 +49,14 @@ void UBluEye::init()
 
 	browserSettings.web_security = STATE_DISABLED;
 
-	info.width = Width;
-	info.height = Height;
+	info.width = Settings.Width;
+	info.height = Settings.Height;
 
 	// Set transparant option
 	info.SetAsWindowless(0); //bIsTransparent
 
 	// Figure out if we want to turn on WebGL support
-	if (bEnableWebGL)
+	if (Settings.bEnableWebGL)
 	{
 		if (BluManager::CPURenderSettings)
 		{
@@ -60,7 +65,7 @@ void UBluEye::init()
 		browserSettings.webgl = STATE_ENABLED;
 	}
 
-	renderer = new RenderHandler(Width, Height, this);
+	renderer = new RenderHandler(Settings.Width, Settings.Height, this);
 	g_handler = new BrowserClient(renderer);
 	//browser = CefBrowserHost::CreateBrowserSync(info, g_handler.get(), "about:blank", browserSettings, NULL);
 	browser = CefBrowserHost::CreateBrowserSync(
@@ -70,6 +75,9 @@ void UBluEye::init()
 		browserSettings,
 		NULL,
 		NULL);
+
+	browser->GetHost()->SetWindowlessFrameRate(Settings.FrameRate);
+	browser->GetHost()->SetAudioMuted(Settings.bAudioMuted);
 
 	// Setup JS event emitter
 	g_handler->SetEventEmitter(&ScriptEventEmitter);
@@ -90,10 +98,12 @@ void UBluEye::ResetTexture()
 	// Here we init the texture to its initial state
 	DestroyTexture();
 
+	bValidTexture = false;
 	Texture = nullptr;
+	
 
 	// init the new Texture2D
-	Texture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+	Texture = UTexture2D::CreateTransient(Settings.Width, Settings.Height, PF_B8G8R8A8);
 	Texture->AddToRoot();
 	Texture->UpdateResource();
 
@@ -146,10 +156,10 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 		RegionData->Texture2DResource = (FTexture2DResource*)Texture->Resource;
 		RegionData->NumRegions = regionCount;
 		RegionData->SrcBpp = 4;
-		RegionData->SrcPitch = Width * 4;
+		RegionData->SrcPitch = Settings.Width * 4;
 
 		//We need to copy this memory or it might get uninitialized
-		RegionData->SrcData.SetNumUninitialized(RegionData->SrcPitch * Height);
+		RegionData->SrcData.SetNumUninitialized(RegionData->SrcPitch * Settings.Height);
 		FPlatformMemory::Memcpy(RegionData->SrcData.GetData(), buffer, RegionData->SrcData.Num());
 		RegionData->Regions = updateRegions;
 
@@ -317,8 +327,8 @@ UTexture2D* UBluEye::ResizeBrowser(const int32 NewWidth, const int32 NewHeight)
 	bEnabled = false;
 
 	// Set our new Width and Height
-	Width = NewWidth;
-	Height = NewHeight;
+	Settings.Width = NewWidth;
+	Settings.Height = NewHeight;
 	
 	// Update our render handler
 	renderer->Width = NewWidth;
@@ -326,7 +336,7 @@ UTexture2D* UBluEye::ResizeBrowser(const int32 NewWidth, const int32 NewHeight)
 
 	bValidTexture = false;
 
-	Texture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+	Texture = UTexture2D::CreateTransient(Settings.Width, Settings.Height, PF_B8G8R8A8);
 	Texture->AddToRoot();
 	Texture->UpdateResource();
 
@@ -351,8 +361,8 @@ UTexture2D* UBluEye::CropWindow(const int32 Y, const int32 X, const int32 NewWid
 
 
 	// Set our new Width and Height
-	Width = NewWidth;
-	Height = NewHeight;
+	Settings.Width = NewWidth;
+	Settings.Height = NewHeight;
 
 	// Update our render handler
 	renderer->Width = NewWidth;
@@ -360,7 +370,7 @@ UTexture2D* UBluEye::CropWindow(const int32 Y, const int32 X, const int32 NewWid
 
 	bValidTexture = false;
 
-	Texture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+	Texture = UTexture2D::CreateTransient(Settings.Width, Settings.Height, PF_B8G8R8A8);
 	Texture->AddToRoot();
 	Texture->UpdateResource();
 
@@ -383,13 +393,13 @@ UBluEye* UBluEye::SetProperties(const int32 SetWidth,
 	const FName& SetTextureParameterName,
 	UMaterialInterface* SetBaseMaterial)
 {
-	Width = SetWidth;
-	Height = SetHeight;
+	Settings.Width = SetWidth;
+	Settings.Height = SetHeight;
 
 	bEnabled = SetEnabled;
 
-	bIsTransparent = SetIsTransparent;
-	bEnableWebGL = SetWebGL;
+	Settings.bIsTransparent = SetIsTransparent;
+	Settings.bEnableWebGL = SetWebGL;
 	BaseMaterial = SetBaseMaterial;
 
 	DefaultURL = SetDefaultURL;
@@ -594,7 +604,7 @@ UTexture2D* UBluEye::GetTexture() const
 {
 	if (!Texture)
 	{
-		return UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);
+		return UTexture2D::CreateTransient(Settings.Width, Settings.Height, PF_B8G8R8A8);
 	}
 
 	return Texture;
@@ -646,8 +656,13 @@ void UBluEye::BeginDestroy()
 	if (browser)
 	{
 		// Close up the browser
+		browser->GetHost()->SetAudioMuted(true);
+		browser->GetMainFrame()->LoadURL("about:blank");
+		//browser->GetMainFrame()->Delete();
 		browser->GetHost()->CloseDevTools();
 		browser->GetHost()->CloseBrowser(true);
+		browser = nullptr;
+
 
 		UE_LOG(LogBlu, Warning, TEXT("Browser Closing"));
 	}

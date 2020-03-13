@@ -24,12 +24,12 @@ class BLU_API BluManager : public CefApp
 
 	public:
 
-		BluManager();
+	BluManager();
 
-		static void doBluMessageLoop();
-		static CefSettings settings;
-		static CefMainArgs main_args;
-		static bool CPURenderSettings;
+	static void doBluMessageLoop();
+	static CefSettings settings;
+	static CefMainArgs main_args;
+	static bool CPURenderSettings;
 
 	virtual void OnBeforeCommandLineProcessing(const CefString& process_type,
 			CefRefPtr< CefCommandLine > command_line) override;

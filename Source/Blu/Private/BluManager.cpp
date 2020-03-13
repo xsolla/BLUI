@@ -52,4 +52,4 @@ void BluManager::doBluMessageLoop()
 
 CefSettings BluManager::settings;
 CefMainArgs BluManager::main_args;
-bool BluManager::CPURenderSettings = true;
+bool BluManager::CPURenderSettings = false;
