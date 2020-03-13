@@ -142,7 +142,7 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 	}
 
 	//todo: remove debug address hack
-	if (bValidTexture)
+	if (bValidTexture && Texture->IsValidLowLevelFast())
 	{
 
 		if (buffer == nullptr)
