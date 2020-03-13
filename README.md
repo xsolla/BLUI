@@ -4,15 +4,11 @@
 
 ## Getnamo Fork Notes
 
-Fork made to support small additions and changes for certain use cases.
+A fork of BLUI that is kept relatively up to date.
+
+Latest release is updated to [CEF 80.0.3987.132](https://github.com/chromiumembedded/cef/tree/3987).
 
 To install check out the latest releases https://github.com/getnamo/BLUI/releases and drag and drop *Plugins* folder into your project root folder
-
-### Download and Fullscreen Support
-
-Contains changes to allow downloading of files via the inbuilt browser.
-
-Updated CEF build to 3.2556 to support fullscreen videos.
 
 ### Convenience Blueprints
 
@@ -76,14 +72,6 @@ Thanks to @oivio we have the Demo project updated to the latest release. See htt
 
 Click on image to take you to video.
 
-## //End Fork Notes
-
-## HTML powered UI and HUD for Unreal Engine 4
-(Hit up the wiki for a quick start guide!)
-
-Do you use BLUI in your project? I'd really love it if you credit me and it! You can even use the [logo right here!](https://res.cloudinary.com/aaronshea/image/upload/v1423576170/BLUI-Transparent_eu582n.png)
-
-License: MIT
 
 What is it?
 ---------------------------------------
@@ -108,21 +96,14 @@ Re-generate your project's Visual Studio file and load up the editor. Then check
 
 Updating the CEF event loop
 ---------------------------------------
-~~You must call the `BluManager::doBluMessageLoop();` method every tick in order for the CEF process to update properly. To do this, override the default GameMode's Tick function and include the `Blu/Public/BluManager.h` header file. You can then call the appropriate method.~~
-
-As of now, you no longer need to do this. You can simply call a blueprint node to Tick the CEF loop every tick of the level blueprint.
+Some actor or level blueprint needs to call [RunBluEventLoop](https://github.com/getnamo/BLUI/blob/master/Source/Blu/Public/BluBlueprintFunctionLibrary.h#L18).
 
 
 Loading Local Files
 ---------------------------------------
-Set your default URL or use the "Load URL" node/method to load a URL that starts with `blui://` this will point to the directory root of the project or the game (if packaged). So if you wanted to load an HTML file from `YourProject/UI/file.html`, set the URL to `blui://UI/file.html`
+Set your default URL or use the "Load URL" node/method to load a URL that starts with `blui://` (or `local://`) this will point to the directory root of the project or the game (if packaged). So if you wanted to load an HTML file from `YourProject/UI/file.html`, set the URL to `blui://UI/file.html`
 
 
 HUD Example Blueprint
 ---------------------------------------
 Within the release, you'll find an ExampleHUD blueprint file, place this into your project's blueprints directory to try it out! (It's a simple UMG widget pre-configures to accept keyboard and mouse input, with a BluEye instance hooked up to a canvas)
-
-
-Shipping Your Game (Linux)
----------------------------------------
-Copy all contents of the Linux shipping files into your packaged game's `GameName/Binaries/{Linux}`, these are the required files for the Chromium process.
