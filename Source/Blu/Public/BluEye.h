@@ -26,7 +26,7 @@ struct FUpdateTextureRegionsData
 
 UENUM(BlueprintType)
 enum EBluSpecialKeys
-{ 
+{
 	backspacekey = 8 UMETA(DisplayName = "Backspace"),
 	tabkey = 9 UMETA(DisplayName = "Tab"),
 	enterkey = 13 UMETA(DisplayName = "Enter"),
@@ -43,7 +43,8 @@ enum EBluSpecialKeys
 	insertkey = 45 UMETA(DisplayName = "Insert"),
 	deletekey = 46 UMETA(DisplayName = "Delete"),
 	numlockkey = 144 UMETA(DisplayName = "Num Lock"),
-	scrolllockkey = 145 UMETA(DisplayName = "Scroll Lock")
+	scrolllockkey = 145 UMETA(DisplayName = "Scroll Lock"),
+	unknownkey = 0,
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDownloadCompleteSignature, FString, url);
