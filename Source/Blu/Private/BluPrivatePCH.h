@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreUObject.h"
-#include "Engine.h"
+#include "Engine/Engine.h"
 #include "Engine/Console.h"
 #include "Runtime/UMG/Public/UMG.h"
 #include "Runtime/UMG/Public/UMGStyle.h"
@@ -10,7 +10,7 @@
 
 // You should place include statements to your module's private header files here.  You only need to
 // add includes for headers that are used in most of your module's source files though.
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
 #include "IBlu.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogBlu, Log, All);

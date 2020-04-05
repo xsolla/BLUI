@@ -2,7 +2,7 @@
 * (c) Aaron M. Shea 2014
 */
 #pragma once
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
 
 class IBluLoader : public IModuleInterface
 {
