@@ -53,6 +53,24 @@ void BrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 	}
 }
 
+bool BrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level, const CefString& message, const CefString& source, int line)
+{
+	FString LogMessage = FString(message.c_str());
+	log_emitter->Broadcast(LogMessage);
+	return true;
+}
+
+void BrowserClient::OnFullscreenModeChange(CefRefPtr< CefBrowser > browser, bool fullscreen)
+{
+	UE_LOG(LogTemp, Log, TEXT("Changed to Fullscreen: %d"), fullscreen);
+}
+
+void BrowserClient::OnTitleChange(CefRefPtr< CefBrowser > browser, const CefString& title)
+{
+	FString TitleMessage = FString(title.c_str());
+	log_emitter->Broadcast(TitleMessage);
+}
+
 CefRefPtr<CefBrowser> BrowserClient::GetCEFBrowser()
 {
 	return m_Browser;
@@ -85,6 +103,12 @@ bool BrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
 	return true;
 }
 
+void BrowserClient::OnUncaughtException(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context, CefRefPtr<CefV8Exception> exception, CefRefPtr<CefV8StackTrace> stackTrace)
+{
+	FString ErrorMessage = FString(exception->GetMessage().c_str());
+	UE_LOG(LogClass, Warning, TEXT("%s"), *ErrorMessage);
+}
+
 //The path slashes have to be reversed to work with CEF
 FString ReversePathSlashes(FString forwardPath)
 {
@@ -99,6 +123,11 @@ FString UtilityBLUIDownloadsFolder()
 void BrowserClient::SetEventEmitter(FScriptEvent* emitter)
 {
 	this->event_emitter = emitter;
+}
+
+void BrowserClient::SetLogEmitter(FLogEvent* emitter)
+{
+	this->log_emitter = emitter;
 }
 
 void BrowserClient::OnBeforeDownload(

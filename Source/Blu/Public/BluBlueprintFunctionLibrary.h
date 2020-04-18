@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Input/Events.h"
 #include "BluBlueprintFunctionLibrary.generated.h"
 
 UCLASS(ClassGroup = Blu, Blueprintable)
@@ -22,6 +23,10 @@ class BLU_API UBluBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "JSON To String", Keywords = "blui blu eye json parse string"), Category = Blu)
 	static FString JSONToString(UBluJsonObj *ObjectToParse);
+
+	/** convert regular key events into char event which you can use char press*/
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "To CharacterEvent (Key)", BlueprintAutocast), Category = Blu)
+	static FCharacterEvent ToKeyEvent(FKey Key);
 
 	//Utility functions taken from Victory Plugin
 	UFUNCTION(BlueprintPure, Category = "Blu Utility")

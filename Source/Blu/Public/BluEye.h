@@ -5,8 +5,6 @@
 class BrowserClient;
 class RenderHandler;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FScriptEvent, const FString&, EventName, const FString&, EventMessage);
-
 
 struct FBluTextureParams
 {
@@ -74,9 +72,14 @@ struct FBluEyeSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
 	bool bAudioMuted;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
+	bool bAutoPlayEnabled;
+
 	FBluEyeSettings();
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FScriptEvent, const FString&, EventName, const FString&, EventMessage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLogEvent, const FString&, LogText);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDownloadCompleteSignature, FString, url);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDownloadUpdatedSignature, FString, url, float, percentage);
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDownloadComplete);
@@ -101,7 +104,7 @@ public:
 
 	/** Initialize function, should be called after properties are set */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-	void init();
+	void Init();
 
 	/** The default URL this UI component will load */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
@@ -210,6 +213,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FScriptEvent ScriptEventEmitter;
 
+	UPROPERTY(BlueprintAssignable)
+	FLogEvent LogEventEmitter;
+
 	/** Trigger a key down event */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
 	void KeyDown(FKeyEvent InKey);
@@ -222,9 +228,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Blu")
 	void KeyPress(FKeyEvent InKey);
 
-	/** Trigger a character key event */
+	/** Trigger a character key event as if typing input */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-	void CharKeyPress(FCharacterEvent CharEvent);
+	void CharKeyInput(FCharacterEvent CharEvent);
+
+	/** Trigger a character key event as if pressing like a keyboard shortcut */
+	UFUNCTION(BlueprintCallable, Category = "Blu")
+	void CharKeyDownUp(FCharacterEvent CharEvent);
 
 	/** Trigger a raw keypress via a character */
 	UFUNCTION(BlueprintCallable, Category = "Blu", meta = (AdvancedDisplay = "2"))

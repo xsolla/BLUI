@@ -3,7 +3,6 @@
 
 BluManager::BluManager()
 {
-
 }
 
 void BluManager::OnBeforeCommandLineProcessing(const CefString& process_type,
@@ -41,6 +40,11 @@ void BluManager::OnBeforeCommandLineProcessing(const CefString& process_type,
 
 	command_line->AppendSwitchWithValue("enable-blink-features", "HTMLImports");
 
+	if (AutoPlay)
+	{
+		command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
+	}
+	
 	// Append more command line options here if you want
 	// Visit Peter Beverloo's site: http://peter.sh/experiments/chromium-command-line-switches/ for more info on the switches
 
@@ -54,3 +58,4 @@ void BluManager::doBluMessageLoop()
 CefSettings BluManager::settings;
 CefMainArgs BluManager::main_args;
 bool BluManager::CPURenderSettings = false;
+bool BluManager::AutoPlay = true;

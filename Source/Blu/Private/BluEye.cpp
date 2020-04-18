@@ -12,6 +12,7 @@ FBluEyeSettings::FBluEyeSettings()
 	bIsTransparent = false;
 	bEnableWebGL = true;
 	bAudioMuted = false;
+	bAutoPlayEnabled = true;
 }
 
 UBluEye::UBluEye(const class FObjectInitializer& PCIP)
@@ -21,7 +22,7 @@ UBluEye::UBluEye(const class FObjectInitializer& PCIP)
 	bValidTexture = false;
 }
 
-void UBluEye::init()
+void UBluEye::Init()
 {
 
 	/** 
@@ -47,7 +48,8 @@ void UBluEye::init()
 	browserSettings.universal_access_from_file_urls = STATE_ENABLED;
 	browserSettings.file_access_from_file_urls = STATE_ENABLED;
 
-	browserSettings.web_security = STATE_DISABLED;
+	//browserSettings.web_security = STATE_DISABLED;
+	//browserSettings.fullscreen_enabled = true;
 
 	info.width = Settings.Width;
 	info.height = Settings.Height;
@@ -65,6 +67,9 @@ void UBluEye::init()
 		browserSettings.webgl = STATE_ENABLED;
 	}
 
+	//NB: this setting will change it globally for all new instances
+	BluManager::AutoPlay = Settings.bAutoPlayEnabled;
+
 	renderer = new RenderHandler(Settings.Width, Settings.Height, this);
 	g_handler = new BrowserClient(renderer);
 	//browser = CefBrowserHost::CreateBrowserSync(info, g_handler.get(), "about:blank", browserSettings, NULL);
@@ -76,11 +81,14 @@ void UBluEye::init()
 		NULL,
 		NULL);
 
+	//browser->GetHost()->PrintToPDF()
+
 	browser->GetHost()->SetWindowlessFrameRate(Settings.FrameRate);
 	browser->GetHost()->SetAudioMuted(Settings.bAudioMuted);
 
 	// Setup JS event emitter
 	g_handler->SetEventEmitter(&ScriptEventEmitter);
+	g_handler->SetLogEmitter(&LogEventEmitter);
 
 	UE_LOG(LogBlu, Log, TEXT("Component Initialized"));
 	CefString str = *DefaultURL;
@@ -508,7 +516,7 @@ void UBluEye::processKeyCode(FKeyEvent InKey)
 	key_event.windows_key_code = InKey.GetKeyCode();
 }
 
-void UBluEye::CharKeyPress(FCharacterEvent CharEvent)
+void UBluEye::CharKeyInput(FCharacterEvent CharEvent)
 {
 
 	// Process keymods like usual
@@ -523,6 +531,26 @@ void UBluEye::CharKeyPress(FCharacterEvent CharEvent)
     key_event.native_key_code = CharEvent.GetCharacter();
 #endif
 	key_event.type = KEYEVENT_CHAR;
+	browser->GetHost()->SendKeyEvent(key_event);
+}
+
+void UBluEye::CharKeyDownUp(FCharacterEvent CharEvent)
+{
+	// Process keymods like usual
+	processKeyMods(CharEvent);
+
+	// Below char input needs some special treatment, se we can't use the normal key down/up methods
+
+#if PLATFORM_MAC
+	key_event.character = CharEvent.GetCharacter();
+#else
+	key_event.windows_key_code = CharEvent.GetCharacter();
+	key_event.native_key_code = CharEvent.GetCharacter();
+#endif
+	key_event.type = KEYEVENT_KEYDOWN;
+	browser->GetHost()->SendKeyEvent(key_event);
+
+	key_event.type = KEYEVENT_KEYUP;
 	browser->GetHost()->SendKeyEvent(key_event);
 }
 
@@ -543,7 +571,7 @@ void UBluEye::RawCharKeyPress(const FString charToPress, bool isRepeat,
 
 	FCharacterEvent* CharEvent = new FCharacterEvent(charToPress.GetCharArray()[0], *KeyState, 0, isRepeat);
 
-	CharKeyPress(*CharEvent);
+	CharKeyInput(*CharEvent);
 
 }
 

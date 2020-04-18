@@ -57,6 +57,16 @@ FString UBluBlueprintFunctionLibrary::JSONToString(UBluJsonObj *ObjectToParse)
 
 }
 
+FCharacterEvent UBluBlueprintFunctionLibrary::ToKeyEvent(FKey Key)
+{
+	FModifierKeysState KeyState;
+
+	FCharacterEvent CharEvent = FCharacterEvent(Key.GetFName().ToString().ToUpper().GetCharArray()[0], KeyState, 0, 0);
+
+	return CharEvent;
+}
+
+
 
 FString UBluBlueprintFunctionLibrary::GameRootDirectory()
 {

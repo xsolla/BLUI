@@ -13,6 +13,7 @@ class FBlu : public IBlu
 		BluManager::settings.windowless_rendering_enabled = true;
 		BluManager::settings.no_sandbox = true;
 		BluManager::settings.remote_debugging_port = 7777;
+		BluManager::settings.uncaught_exception_stack_size = 5;
 
 	#if PLATFORM_LINUX
 		ExecutablePath = "./blu_ue4_process";
