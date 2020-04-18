@@ -39,6 +39,7 @@ void BluManager::OnBeforeCommandLineProcessing(const CefString& process_type,
 		command_line->AppendSwitch("disable-web-security");
 	}
 
+	command_line->AppendSwitchWithValue("enable-blink-features", "HTMLImports");
 
 	// Append more command line options here if you want
 	// Visit Peter Beverloo's site: http://peter.sh/experiments/chromium-command-line-switches/ for more info on the switches
