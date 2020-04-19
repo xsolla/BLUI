@@ -10,6 +10,8 @@ Latest release is updated to [CEF 80.0.3987.132](https://github.com/chromiumembe
 
 To install check out the latest releases https://github.com/getnamo/BLUI/releases and drag and drop *Plugins* folder into your project root folder
 
+Unreal thread: https://forums.unrealengine.com/community/released-projects/29036-blui-open-source-html5-js-css-hud-ui
+
 ### Convenience Blueprints
 
 The native plugin didn't contain any self contained drag and drop examples so I've added some.
