@@ -226,9 +226,17 @@ void UBluEye::ExecuteJSMethodWithParams(const FString& methodName, const TArray<
 
 void UBluEye::LoadURL(const FString& newURL)
 {
+	FString FinalUrl = newURL;
+
+	//Detect chrome-devtools, and re-target them to regular devtools
+	if (newURL.Contains(TEXT("chrome-devtools://devtools")))
+	{
+		//devtools://devtools/inspector.html?v8only=true&ws=localhost:9229
+		//browser->GetHost()->ShowDevTools(info, g_handler, browserSettings, CefPoint());
+		FinalUrl = FinalUrl.Replace(TEXT("chrome-devtools://devtools/bundled/inspector.html"), TEXT("devtools://devtools/inspector.html"));
+	}
 
 	// Check if we want to load a local file
-
 	if (newURL.Contains(TEXT("blui://"), ESearchCase::IgnoreCase, ESearchDir::FromStart))
 	{
 
@@ -251,7 +259,7 @@ void UBluEye::LoadURL(const FString& newURL)
 	}
 
 	// Load as usual
-	browser->GetMainFrame()->LoadURL(*newURL);
+	browser->GetMainFrame()->LoadURL(*FinalUrl);
 
 }
 
