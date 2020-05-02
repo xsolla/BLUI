@@ -76,6 +76,11 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 		{
 			return this;
 		}
+		//required or pdf download won't work 
+		virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override 
+		{
+			return this; 	
+		}
 
 		virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, 
 			CefRefPtr<CefFrame> frame,
