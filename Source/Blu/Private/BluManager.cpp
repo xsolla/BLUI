@@ -1,5 +1,4 @@
 #include "BluManager.h"
-//#include "RenderHandler.h"
 
 BluManager::BluManager()
 {

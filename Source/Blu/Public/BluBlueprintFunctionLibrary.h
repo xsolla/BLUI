@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "Input/Events.h"
 #include "BluEye.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
+
 #include "BluBlueprintFunctionLibrary.generated.h"
 
 UCLASS(ClassGroup = Blu, Blueprintable)

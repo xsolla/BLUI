@@ -1,10 +1,11 @@
 #include "RenderHandler.h"
+#include "BluEye.h"
 
 RenderHandler::RenderHandler(int32 width, int32 height, UBluEye* ui)
 {
 	this->Width = width;
 	this->Height = height;
-	this->parentUI = ui;
+	this->ParentUI = ui;
 }
 
 void RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
@@ -28,33 +29,33 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type
 	}
 
 	// Trigger our parent UIs Texture to update
-	parentUI->TextureUpdate(buffer, updateRegions, dirtyRects.size());
+	ParentUI->TextureUpdate(buffer, updateRegions, dirtyRects.size());
 }
 
 void BrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
 	//CEF_REQUIRE_UI_THREAD();
-	if (!m_Browser.get())
+	if (!BrowserRef.get())
 	{
 		// Keep a reference to the main browser.
-		m_Browser = browser;
-		m_BrowserId = browser->GetIdentifier();
+		BrowserRef = browser;
+		BrowserId = browser->GetIdentifier();
 	}
 }
 
 void BrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 {
 	//CEF_REQUIRE_UI_THREAD();
-	if (m_BrowserId == browser->GetIdentifier())
+	if (BrowserId == browser->GetIdentifier())
 	{
-		m_Browser = NULL;
+		BrowserRef = NULL;
 	}
 }
 
 bool BrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level, const CefString& message, const CefString& source, int line)
 {
 	FString LogMessage = FString(message.c_str());
-	log_emitter->Broadcast(LogMessage);
+	LogEmitter->Broadcast(LogMessage);
 	return true;
 }
 
@@ -66,12 +67,12 @@ void BrowserClient::OnFullscreenModeChange(CefRefPtr< CefBrowser > browser, bool
 void BrowserClient::OnTitleChange(CefRefPtr< CefBrowser > browser, const CefString& title)
 {
 	FString TitleMessage = FString(title.c_str());
-	log_emitter->Broadcast(TitleMessage);
+	LogEmitter->Broadcast(TitleMessage);
 }
 
 CefRefPtr<CefBrowser> BrowserClient::GetCEFBrowser()
 {
-	return m_Browser;
+	return BrowserRef;
 }
 
 bool BrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message)
@@ -95,7 +96,7 @@ bool BrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
 		else if (data_type == "double")
 			data = FString::SanitizeFloat(message->GetArgumentList()->GetDouble(1));
 
-		event_emitter->Broadcast(name, data);
+		EventEmitter->Broadcast(name, data);
 	}
 
 	return true;
@@ -120,12 +121,12 @@ FString UtilityBLUIDownloadsFolder()
 
 void BrowserClient::SetEventEmitter(FScriptEvent* emitter)
 {
-	this->event_emitter = emitter;
+	this->EventEmitter = emitter;
 }
 
 void BrowserClient::SetLogEmitter(FLogEvent* emitter)
 {
-	this->log_emitter = emitter;
+	this->LogEmitter = emitter;
 }
 
 void BrowserClient::OnBeforeDownload(
@@ -146,20 +147,20 @@ void BrowserClient::OnBeforeDownload(
 }
 
 void BrowserClient::OnDownloadUpdated(
-	CefRefPtr<CefBrowser> browser,
-	CefRefPtr<CefDownloadItem> download_item,
-	CefRefPtr<CefDownloadItemCallback> callback)
+	CefRefPtr<CefBrowser> ForBrowser,
+	CefRefPtr<CefDownloadItem> DownloadItem,
+	CefRefPtr<CefDownloadItemCallback> Callback)
 {
-	int percentage = download_item->GetPercentComplete();
-	FString url = FString(download_item->GetFullPath().c_str());
+	int Percentage = DownloadItem->GetPercentComplete();
+	FString Url = FString(DownloadItem->GetFullPath().c_str());
 	
-	UE_LOG(LogClass, Log, TEXT("Download %s Updated: %d"), *url , percentage);
+	UE_LOG(LogClass, Log, TEXT("Download %s Updated: %d"), *Url , Percentage);
 
-	m_renderHandler->parentUI->DownloadUpdated.Broadcast(url, percentage);
+	RenderHandlerRef->ParentUI->DownloadUpdated.Broadcast(Url, Percentage);
 
-	if (percentage == 100 && download_item->IsComplete()) {
-		UE_LOG(LogClass, Log, TEXT("Download %s Complete"), *url);
-		m_renderHandler->parentUI->DownloadComplete.Broadcast(url);
+	if (Percentage == 100 && DownloadItem->IsComplete()) {
+		UE_LOG(LogClass, Log, TEXT("Download %s Complete"), *Url);
+		RenderHandlerRef->ParentUI->DownloadComplete.Broadcast(Url);
 	}
 
 	//Example download cancel/pause etc, we just have to hijack this

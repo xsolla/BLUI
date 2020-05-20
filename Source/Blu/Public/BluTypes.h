@@ -1,4 +1,6 @@
 #pragma once
+
+#include "CoreMinimal.h"
 #include "BluTypes.generated.h"
 
 struct FBluTextureParams

@@ -1,5 +1,5 @@
 #include "IBlu.h"
-//#include "RenderHandler.h"
+#include "BluManager.h"
 
 class FBlu : public IBlu
 {
@@ -7,7 +7,7 @@ class FBlu : public IBlu
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override
 	{
-		/*CefString GameDirCef = *FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() + "BluCache");
+		CefString GameDirCef = *FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() + "BluCache");
 		FString ExecutablePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() + "Plugins/BLUI/ThirdParty/cef/");
 
 		// Setup the default settings for BluManager
@@ -40,7 +40,6 @@ class FBlu : public IBlu
 		//CefExecuteProcess(BluManager::main_args, BluApp, NULL);
 		CefInitialize(BluManager::main_args, BluManager::settings, BluApp, NULL);
 
-		*/
 		UE_LOG(LogBlu, Log, TEXT(" STATUS: Loaded"));
 	}
 

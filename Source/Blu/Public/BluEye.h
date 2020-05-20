@@ -1,8 +1,9 @@
 #pragma once
 
-#include "BluTypes.h"
 #include "RenderHandler.h"
+#include "BluTypes.h"
 #include "BluManager.h"
+#include "UObject/Object.h"
 #include "BluEye.generated.h"
 
 UCLASS(ClassGroup = Blu, Blueprintable)
@@ -214,17 +215,17 @@ public:
 
 	void BeginDestroy() override;
 
-	CefRefPtr<CefBrowser> browser;
+	CefRefPtr<CefBrowser> Browser;
 
 protected:
 
-	CefWindowInfo info;
-	CefRefPtr<BrowserClient> g_handler;
-	CefBrowserSettings browserSettings;
-	RenderHandler* renderer;
+	CefWindowInfo Info;
+	CefRefPtr<BrowserClient> ClientHandler;
+	CefBrowserSettings BrowserSettings;
+	RenderHandler* Renderer;
 	
-	CefMouseEvent mouse_event;
-	CefKeyEvent key_event;
+	CefMouseEvent MouseEvent;
+	CefKeyEvent KeyEvent;
 
 	void ResetTexture();
 	void DestroyTexture();

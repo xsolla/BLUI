@@ -6,8 +6,8 @@ FBluEyeSettings::FBluEyeSettings()
 {
 	FrameRate = 60.f;
 
-	Width = 800;
-	Height = 600;
+	Width = 1280;
+	Height = 720;
 
 	bIsTransparent = false;
 	bEnableWebGL = true;
@@ -45,17 +45,17 @@ void UBluEye::Init()
 		return;
 	}
 
-	browserSettings.universal_access_from_file_urls = STATE_ENABLED;
-	browserSettings.file_access_from_file_urls = STATE_ENABLED;
+	BrowserSettings.universal_access_from_file_urls = STATE_ENABLED;
+	BrowserSettings.file_access_from_file_urls = STATE_ENABLED;
 
 	//browserSettings.web_security = STATE_DISABLED;
 	//browserSettings.fullscreen_enabled = true;
 
-	info.width = Settings.Width;
-	info.height = Settings.Height;
+	Info.width = Settings.Width;
+	Info.height = Settings.Height;
 
 	// Set transparant option
-	info.SetAsWindowless(0); //bIsTransparent
+	Info.SetAsWindowless(0); //bIsTransparent
 
 	// Figure out if we want to turn on WebGL support
 	if (Settings.bEnableWebGL)
@@ -64,31 +64,29 @@ void UBluEye::Init()
 		{
 			UE_LOG(LogBlu, Error, TEXT("You have enabled WebGL for this browser, but CPU Saver is enabled in BluManager.cpp - WebGL will not work!"));
 		}
-		browserSettings.webgl = STATE_ENABLED;
+		BrowserSettings.webgl = STATE_ENABLED;
 	}
 
 	//NB: this setting will change it globally for all new instances
 	BluManager::AutoPlay = Settings.bAutoPlayEnabled;
 
-	renderer = new RenderHandler(Settings.Width, Settings.Height, this);
-	g_handler = new BrowserClient(renderer);
-	//browser = CefBrowserHost::CreateBrowserSync(info, g_handler.get(), "about:blank", browserSettings, NULL);
-	browser = CefBrowserHost::CreateBrowserSync(
-		info,
-		g_handler.get(),
+	Renderer = new RenderHandler(Settings.Width, Settings.Height, this);
+	ClientHandler = new BrowserClient(Renderer);
+	Browser = CefBrowserHost::CreateBrowserSync(
+		Info,
+		ClientHandler.get(),
 		"about:blank",
-		browserSettings,
+		BrowserSettings,
 		NULL,
 		NULL);
 
-	//browser->GetHost()->PrintToPDF()
 
-	browser->GetHost()->SetWindowlessFrameRate(Settings.FrameRate);
-	browser->GetHost()->SetAudioMuted(Settings.bAudioMuted);
+	Browser->GetHost()->SetWindowlessFrameRate(Settings.FrameRate);
+	Browser->GetHost()->SetAudioMuted(Settings.bAudioMuted);
 
 	// Setup JS event emitter
-	g_handler->SetEventEmitter(&ScriptEventEmitter);
-	g_handler->SetLogEmitter(&LogEventEmitter);
+	ClientHandler->SetEventEmitter(&ScriptEventEmitter);
+	ClientHandler->SetLogEmitter(&LogEventEmitter);
 
 	UE_LOG(LogBlu, Log, TEXT("Component Initialized"));
 	CefString str = *DefaultURL;
@@ -143,7 +141,7 @@ void UBluEye::DestroyTexture()
 
 void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRegions, uint32  regionCount)
 {
-	if (!browser || !bEnabled)
+	if (!Browser || !bEnabled)
 	{
 		UE_LOG(LogBlu, Warning, TEXT("NO BROWSER ACCESS OR NOT ENABLED"))
 		return;
@@ -193,7 +191,7 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 void UBluEye::ExecuteJS(const FString& code)
 {
 	CefString codeStr = *code;
-	browser->GetMainFrame()->ExecuteJavaScript(codeStr, "", 0);
+	Browser->GetMainFrame()->ExecuteJavaScript(codeStr, "", 0);
 }
 
 void UBluEye::ExecuteJSMethodWithParams(const FString& methodName, const TArray<FString> params)
@@ -245,30 +243,30 @@ void UBluEye::LoadURL(const FString& newURL)
 		UE_LOG(LogBlu, Log, TEXT("Load Local File: %s"), *LocalFile)
 
 		// Load it up 
-		browser->GetMainFrame()->LoadURL(*LocalFile);
+		Browser->GetMainFrame()->LoadURL(*LocalFile);
 
 		return;
 
 	}
 
 	// Load as usual
-	browser->GetMainFrame()->LoadURL(*FinalUrl);
+	Browser->GetMainFrame()->LoadURL(*FinalUrl);
 
 }
 
 FString UBluEye::GetCurrentURL()
 {
-	return FString(browser->GetMainFrame()->GetURL().c_str());
+	return FString(Browser->GetMainFrame()->GetURL().c_str());
 }
 
 void UBluEye::SetZoom(const float scale /*= 1*/)
 {
-	browser->GetHost()->SetZoomLevel(scale);
+	Browser->GetHost()->SetZoomLevel(scale);
 }
 
 float UBluEye::GetZoom()
 {
-	return browser->GetHost()->GetZoomLevel();
+	return Browser->GetHost()->GetZoomLevel();
 }
 
 void UBluEye::Test()
@@ -281,13 +279,13 @@ void UBluEye::Test()
 
 void UBluEye::DownloadFile(const FString& fileUrl)
 {
-	browser->GetHost()->StartDownload(*fileUrl);
+	Browser->GetHost()->StartDownload(*fileUrl);
 	//Todo: ensure downloading works in some way, shape or form?
 }
 
 bool UBluEye::IsBrowserLoading()
 {
-	return browser->IsLoading();
+	return Browser->IsLoading();
 }
 
 void UBluEye::ReloadBrowser(bool IgnoreCache)
@@ -295,19 +293,19 @@ void UBluEye::ReloadBrowser(bool IgnoreCache)
 
 	if (IgnoreCache)
 	{
-		return browser->ReloadIgnoreCache();
+		return Browser->ReloadIgnoreCache();
 	}
 
-	browser->Reload();
+	Browser->Reload();
 
 }
 
 void UBluEye::NavBack()
 {
 
-	if (browser->CanGoBack())
+	if (Browser->CanGoBack())
 	{
-		browser->GoBack();
+		Browser->GoBack();
 	}
 
 }
@@ -315,9 +313,9 @@ void UBluEye::NavBack()
 void UBluEye::NavForward()
 {
 
-	if (browser->CanGoForward())
+	if (Browser->CanGoForward())
 	{
-		browser->GoForward();
+		Browser->GoForward();
 	}
 
 }
@@ -340,8 +338,8 @@ UTexture2D* UBluEye::ResizeBrowser(const int32 NewWidth, const int32 NewHeight)
 	Settings.Height = NewHeight;
 	
 	// Update our render handler
-	renderer->Width = NewWidth;
-	renderer->Height = NewHeight;
+	Renderer->Width = NewWidth;
+	Renderer->Height = NewHeight;
 
 	bValidTexture = false;
 
@@ -352,7 +350,7 @@ UTexture2D* UBluEye::ResizeBrowser(const int32 NewWidth, const int32 NewHeight)
 	bValidTexture = true;
 
 	// Let the browser's host know we resized it
-	browser->GetHost()->WasResized();
+	Browser->GetHost()->WasResized();
 
 	// Now we can keep going
 	bEnabled = true;
@@ -374,8 +372,8 @@ UTexture2D* UBluEye::CropWindow(const int32 Y, const int32 X, const int32 NewWid
 	Settings.Height = NewHeight;
 
 	// Update our render handler
-	renderer->Width = NewWidth;
-	renderer->Height = NewHeight;
+	Renderer->Width = NewWidth;
+	Renderer->Height = NewHeight;
 
 	bValidTexture = false;
 
@@ -420,11 +418,11 @@ UBluEye* UBluEye::SetProperties(const int32 SetWidth,
 void UBluEye::TriggerMouseMove(const FVector2D& pos, const float scale)
 {
 
-	mouse_event.x = pos.X / scale;
-	mouse_event.y = pos.Y / scale;
+	MouseEvent.x = pos.X / scale;
+	MouseEvent.y = pos.Y / scale;
 
-	browser->GetHost()->SendFocusEvent(true);
-	browser->GetHost()->SendMouseMoveEvent(mouse_event, false);
+	Browser->GetHost()->SendFocusEvent(true);
+	Browser->GetHost()->SendMouseMoveEvent(MouseEvent, false);
 
 }
 
@@ -442,42 +440,42 @@ void UBluEye::TriggerRightClick(const FVector2D& pos, const float scale)
 
 void UBluEye::TriggerLeftMouseDown(const FVector2D& pos, const float scale)
 {
-	mouse_event.x = pos.X / scale;
-	mouse_event.y = pos.Y / scale;
+	MouseEvent.x = pos.X / scale;
+	MouseEvent.y = pos.Y / scale;
 
-	browser->GetHost()->SendMouseClickEvent(mouse_event, MBT_LEFT, false, 1);
+	Browser->GetHost()->SendMouseClickEvent(MouseEvent, MBT_LEFT, false, 1);
 }
 
 void UBluEye::TriggerRightMouseDown(const FVector2D& pos, const float scale)
 {
-	mouse_event.x = pos.X / scale;
-	mouse_event.y = pos.Y / scale;
+	MouseEvent.x = pos.X / scale;
+	MouseEvent.y = pos.Y / scale;
 
-	browser->GetHost()->SendMouseClickEvent(mouse_event, MBT_RIGHT, false, 1);
+	Browser->GetHost()->SendMouseClickEvent(MouseEvent, MBT_RIGHT, false, 1);
 }
 
 void UBluEye::TriggerLeftMouseUp(const FVector2D& pos, const float scale)
 {
-	mouse_event.x = pos.X / scale;
-	mouse_event.y = pos.Y / scale;
+	MouseEvent.x = pos.X / scale;
+	MouseEvent.y = pos.Y / scale;
 
-	browser->GetHost()->SendMouseClickEvent(mouse_event, MBT_LEFT, true, 1);
+	Browser->GetHost()->SendMouseClickEvent(MouseEvent, MBT_LEFT, true, 1);
 }
 
 void UBluEye::TriggerRightMouseUp(const FVector2D& pos, const float scale)
 {
-	mouse_event.x = pos.X / scale;
-	mouse_event.y = pos.Y / scale;
+	MouseEvent.x = pos.X / scale;
+	MouseEvent.y = pos.Y / scale;
 
-	browser->GetHost()->SendMouseClickEvent(mouse_event, MBT_RIGHT, true, 1);
+	Browser->GetHost()->SendMouseClickEvent(MouseEvent, MBT_RIGHT, true, 1);
 }
 
 void UBluEye::TriggerMouseWheel(const float MouseWheelDelta, const FVector2D& pos, const float scale)
 {
-	mouse_event.x = pos.X / scale;
-	mouse_event.y = pos.Y / scale;
+	MouseEvent.x = pos.X / scale;
+	MouseEvent.y = pos.Y / scale;
 
-	browser->GetHost()->SendMouseWheelEvent(mouse_event, MouseWheelDelta * 10, MouseWheelDelta * 10);
+	Browser->GetHost()->SendMouseWheelEvent(MouseEvent, MouseWheelDelta * 10, MouseWheelDelta * 10);
 }
 
 void UBluEye::KeyDown(FKeyEvent InKey)
@@ -486,8 +484,8 @@ void UBluEye::KeyDown(FKeyEvent InKey)
 	processKeyMods(InKey);
 	processKeyCode(InKey);
 
-	key_event.type = KEYEVENT_KEYDOWN;
-	browser->GetHost()->SendKeyEvent(key_event);
+	KeyEvent.type = KEYEVENT_KEYDOWN;
+	Browser->GetHost()->SendKeyEvent(KeyEvent);
 
 }
 
@@ -497,8 +495,8 @@ void UBluEye::KeyUp(FKeyEvent InKey)
 	processKeyMods(InKey);
 	processKeyCode(InKey);
 
-	key_event.type = KEYEVENT_KEYUP;
-	browser->GetHost()->SendKeyEvent(key_event);
+	KeyEvent.type = KEYEVENT_KEYUP;
+	Browser->GetHost()->SendKeyEvent(KeyEvent);
 
 }
 
@@ -513,8 +511,8 @@ void UBluEye::KeyPress(FKeyEvent InKey)
 
 void UBluEye::processKeyCode(FKeyEvent InKey)
 {
-	key_event.native_key_code = InKey.GetKeyCode();
-	key_event.windows_key_code = InKey.GetKeyCode();
+	KeyEvent.native_key_code = InKey.GetKeyCode();
+	KeyEvent.windows_key_code = InKey.GetKeyCode();
 }
 
 void UBluEye::CharKeyInput(FCharacterEvent CharEvent)
@@ -526,13 +524,13 @@ void UBluEye::CharKeyInput(FCharacterEvent CharEvent)
 	// Below char input needs some special treatment, se we can't use the normal key down/up methods
 
 #if PLATFORM_MAC
-	key_event.character = CharEvent.GetCharacter();
+	KeyEvent.character = CharEvent.GetCharacter();
 #else
-    key_event.windows_key_code = CharEvent.GetCharacter();
-    key_event.native_key_code = CharEvent.GetCharacter();
+    KeyEvent.windows_key_code = CharEvent.GetCharacter();
+    KeyEvent.native_key_code = CharEvent.GetCharacter();
 #endif
-	key_event.type = KEYEVENT_CHAR;
-	browser->GetHost()->SendKeyEvent(key_event);
+	KeyEvent.type = KEYEVENT_CHAR;
+	Browser->GetHost()->SendKeyEvent(KeyEvent);
 }
 
 void UBluEye::CharKeyDownUp(FCharacterEvent CharEvent)
@@ -543,16 +541,16 @@ void UBluEye::CharKeyDownUp(FCharacterEvent CharEvent)
 	// Below char input needs some special treatment, se we can't use the normal key down/up methods
 
 #if PLATFORM_MAC
-	key_event.character = CharEvent.GetCharacter();
+	KeyEvent.character = CharEvent.GetCharacter();
 #else
-	key_event.windows_key_code = CharEvent.GetCharacter();
-	key_event.native_key_code = CharEvent.GetCharacter();
+	KeyEvent.windows_key_code = CharEvent.GetCharacter();
+	KeyEvent.native_key_code = CharEvent.GetCharacter();
 #endif
-	key_event.type = KEYEVENT_KEYDOWN;
-	browser->GetHost()->SendKeyEvent(key_event);
+	KeyEvent.type = KEYEVENT_KEYDOWN;
+	Browser->GetHost()->SendKeyEvent(KeyEvent);
 
-	key_event.type = KEYEVENT_KEYUP;
-	browser->GetHost()->SendKeyEvent(key_event);
+	KeyEvent.type = KEYEVENT_KEYUP;
+	Browser->GetHost()->SendKeyEvent(KeyEvent);
 }
 
 void UBluEye::RawCharKeyPress(const FString charToPress, bool isRepeat,
@@ -589,16 +587,16 @@ void UBluEye::SpecialKeyPress(EBluSpecialKeys key, bool LeftShiftDown,
 
 	int32 keyValue = key;
 
-	key_event.windows_key_code = keyValue;
-	key_event.native_key_code = keyValue;
-	key_event.type = KEYEVENT_KEYDOWN;
-	browser->GetHost()->SendKeyEvent(key_event);
+	KeyEvent.windows_key_code = keyValue;
+	KeyEvent.native_key_code = keyValue;
+	KeyEvent.type = KEYEVENT_KEYDOWN;
+	Browser->GetHost()->SendKeyEvent(KeyEvent);
 
-	key_event.windows_key_code = keyValue;
-	key_event.native_key_code = keyValue;
+	KeyEvent.windows_key_code = keyValue;
+	KeyEvent.native_key_code = keyValue;
 	// bits 30 and 31 should be always 1 for WM_KEYUP
-	key_event.type = KEYEVENT_KEYUP;
-	browser->GetHost()->SendKeyEvent(key_event);
+	KeyEvent.type = KEYEVENT_KEYUP;
+	Browser->GetHost()->SendKeyEvent(KeyEvent);
 
 }
 
@@ -625,7 +623,7 @@ void UBluEye::processKeyMods(FInputEvent InKey)
 		mods |= cef_event_flags_t::EVENTFLAG_SHIFT_DOWN;
 	}
 
-	key_event.modifiers = mods;
+	KeyEvent.modifiers = mods;
 
 }
 
@@ -682,15 +680,15 @@ void UBluEye::CloseBrowser()
 
 void UBluEye::BeginDestroy()
 {
-	if (browser)
+	if (Browser)
 	{
 		// Close up the browser
-		browser->GetHost()->SetAudioMuted(true);
-		browser->GetMainFrame()->LoadURL("about:blank");
+		Browser->GetHost()->SetAudioMuted(true);
+		Browser->GetMainFrame()->LoadURL("about:blank");
 		//browser->GetMainFrame()->Delete();
-		browser->GetHost()->CloseDevTools();
-		browser->GetHost()->CloseBrowser(true);
-		browser = nullptr;
+		Browser->GetHost()->CloseDevTools();
+		Browser->GetHost()->CloseBrowser(true);
+		Browser = nullptr;
 
 
 		UE_LOG(LogBlu, Warning, TEXT("Browser Closing"));
