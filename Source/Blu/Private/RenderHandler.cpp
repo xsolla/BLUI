@@ -1,72 +1,72 @@
 #include "RenderHandler.h"
 #include "BluEye.h"
 
-RenderHandler::RenderHandler(int32 width, int32 height, UBluEye* ui)
+RenderHandler::RenderHandler(int32 Width, int32 Height, UBluEye* UI)
 {
-	this->Width = width;
-	this->Height = height;
-	this->ParentUI = ui;
+	this->Width = Width;
+	this->Height = Height;
+	this->ParentUI = UI;
 }
 
-void RenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
+void RenderHandler::GetViewRect(CefRefPtr<CefBrowser> Browser, CefRect &Rect)
 {
-	rect = CefRect(0, 0, Width, Height);
+	Rect = CefRect(0, 0, Width, Height);
 }
 
-void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height)
+void RenderHandler::OnPaint(CefRefPtr<CefBrowser> Browser, PaintElementType Type, const RectList &DirtyRects, const void *Buffer, int InWidth, int InHeight)
 {
-	FUpdateTextureRegion2D *updateRegions = static_cast<FUpdateTextureRegion2D*>(FMemory::Malloc(sizeof(FUpdateTextureRegion2D) * dirtyRects.size()));
+	FUpdateTextureRegion2D *UpdateRegions = static_cast<FUpdateTextureRegion2D*>(FMemory::Malloc(sizeof(FUpdateTextureRegion2D) * DirtyRects.size()));
 
-	int current = 0;
-	for (auto dirtyRect : dirtyRects)
+	int Current = 0;
+	for (auto DirtyRect : DirtyRects)
 	{
-		updateRegions[current].DestX = updateRegions[current].SrcX = dirtyRect.x;
-		updateRegions[current].DestY = updateRegions[current].SrcY = dirtyRect.y;
-		updateRegions[current].Height = dirtyRect.height;
-		updateRegions[current].Width = dirtyRect.width;
+		UpdateRegions[Current].DestX = UpdateRegions[Current].SrcX = DirtyRect.x;
+		UpdateRegions[Current].DestY = UpdateRegions[Current].SrcY = DirtyRect.y;
+		UpdateRegions[Current].Height = DirtyRect.height;
+		UpdateRegions[Current].Width = DirtyRect.width;
 
-		current++;
+		Current++;
 	}
 
 	// Trigger our parent UIs Texture to update
-	ParentUI->TextureUpdate(buffer, updateRegions, dirtyRects.size());
+	ParentUI->TextureUpdate(Buffer, UpdateRegions, DirtyRects.size());
 }
 
-void BrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser)
+void BrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> Browser)
 {
 	//CEF_REQUIRE_UI_THREAD();
 	if (!BrowserRef.get())
 	{
 		// Keep a reference to the main browser.
-		BrowserRef = browser;
-		BrowserId = browser->GetIdentifier();
+		BrowserRef = Browser;
+		BrowserId = Browser->GetIdentifier();
 	}
 }
 
-void BrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser)
+void BrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> Browser)
 {
 	//CEF_REQUIRE_UI_THREAD();
-	if (BrowserId == browser->GetIdentifier())
+	if (BrowserId == Browser->GetIdentifier())
 	{
 		BrowserRef = NULL;
 	}
 }
 
-bool BrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level, const CefString& message, const CefString& source, int line)
+bool BrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> Browser, cef_log_severity_t Level, const CefString& Message, const CefString& source, int line)
 {
-	FString LogMessage = FString(message.c_str());
+	FString LogMessage = FString(Message.c_str());
 	LogEmitter->Broadcast(LogMessage);
 	return true;
 }
 
-void BrowserClient::OnFullscreenModeChange(CefRefPtr< CefBrowser > browser, bool fullscreen)
+void BrowserClient::OnFullscreenModeChange(CefRefPtr< CefBrowser > Browser, bool Fullscreen)
 {
-	UE_LOG(LogTemp, Log, TEXT("Changed to Fullscreen: %d"), fullscreen);
+	UE_LOG(LogTemp, Log, TEXT("Changed to Fullscreen: %d"), Fullscreen);
 }
 
-void BrowserClient::OnTitleChange(CefRefPtr< CefBrowser > browser, const CefString& title)
+void BrowserClient::OnTitleChange(CefRefPtr< CefBrowser > Browser, const CefString& Title)
 {
-	FString TitleMessage = FString(title.c_str());
+	FString TitleMessage = FString(Title.c_str());
 	LogEmitter->Broadcast(TitleMessage);
 }
 
@@ -75,43 +75,43 @@ CefRefPtr<CefBrowser> BrowserClient::GetCEFBrowser()
 	return BrowserRef;
 }
 
-bool BrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message)
+bool BrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, CefProcessId SourceProcess, CefRefPtr<CefProcessMessage> Message)
 {
-	FString data;
-	FString name = FString(UTF8_TO_TCHAR(message->GetArgumentList()->GetString(0).ToString().c_str()));
-	FString type = FString(UTF8_TO_TCHAR(message->GetArgumentList()->GetString(2).ToString().c_str()));
-	FString data_type = FString(UTF8_TO_TCHAR(message->GetArgumentList()->GetString(3).ToString().c_str()));
+	FString Data;
+	FString Name = FString(UTF8_TO_TCHAR(Message->GetArgumentList()->GetString(0).ToString().c_str()));
+	FString Type = FString(UTF8_TO_TCHAR(Message->GetArgumentList()->GetString(2).ToString().c_str()));
+	FString DataType = FString(UTF8_TO_TCHAR(Message->GetArgumentList()->GetString(3).ToString().c_str()));
 
-	if (type == "js_event")
+	if (Type == "js_event")
 	{
 
 		// Check the datatype
 
-		if (data_type == "bool")
-			data = message->GetArgumentList()->GetBool(1) ? TEXT("true") : TEXT("false");
-		else if (data_type == "int")
-			data = FString::FromInt(message->GetArgumentList()->GetInt(1));
-		else if (data_type == "string")
-			data = FString(UTF8_TO_TCHAR(message->GetArgumentList()->GetString(1).ToString().c_str()));
-		else if (data_type == "double")
-			data = FString::SanitizeFloat(message->GetArgumentList()->GetDouble(1));
+		if (DataType == "bool")
+			Data = Message->GetArgumentList()->GetBool(1) ? TEXT("true") : TEXT("false");
+		else if (DataType == "int")
+			Data = FString::FromInt(Message->GetArgumentList()->GetInt(1));
+		else if (DataType == "string")
+			Data = FString(UTF8_TO_TCHAR(Message->GetArgumentList()->GetString(1).ToString().c_str()));
+		else if (DataType == "double")
+			Data = FString::SanitizeFloat(Message->GetArgumentList()->GetDouble(1));
 
-		EventEmitter->Broadcast(name, data);
+		EventEmitter->Broadcast(Name, Data);
 	}
 
 	return true;
 }
 
-void BrowserClient::OnUncaughtException(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context, CefRefPtr<CefV8Exception> exception, CefRefPtr<CefV8StackTrace> stackTrace)
+void BrowserClient::OnUncaughtException(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, CefRefPtr<CefV8Context> Context, CefRefPtr<CefV8Exception> Exception, CefRefPtr<CefV8StackTrace> StackTrace)
 {
-	FString ErrorMessage = FString(exception->GetMessage().c_str());
+	FString ErrorMessage = FString(Exception->GetMessage().c_str());
 	UE_LOG(LogClass, Warning, TEXT("%s"), *ErrorMessage);
 }
 
 //The path slashes have to be reversed to work with CEF
-FString ReversePathSlashes(FString forwardPath)
+FString ReversePathSlashes(FString ForwardPath)
 {
-	return forwardPath.Replace(TEXT("/"), TEXT("\\"));
+	return ForwardPath.Replace(TEXT("/"), TEXT("\\"));
 }
 FString UtilityBLUIDownloadsFolder()
 {
@@ -119,31 +119,31 @@ FString UtilityBLUIDownloadsFolder()
 }
 
 
-void BrowserClient::SetEventEmitter(FScriptEvent* emitter)
+void BrowserClient::SetEventEmitter(FScriptEvent* Emitter)
 {
-	this->EventEmitter = emitter;
+	this->EventEmitter = Emitter;
 }
 
-void BrowserClient::SetLogEmitter(FLogEvent* emitter)
+void BrowserClient::SetLogEmitter(FLogEvent* Emitter)
 {
-	this->LogEmitter = emitter;
+	this->LogEmitter = Emitter;
 }
 
 void BrowserClient::OnBeforeDownload(
-	CefRefPtr<CefBrowser> browser,
-	CefRefPtr<CefDownloadItem> download_item,
-	const CefString & suggested_name,
-	CefRefPtr<CefBeforeDownloadCallback> callback)
+	CefRefPtr<CefBrowser> Browser,
+	CefRefPtr<CefDownloadItem> DownloadItem,
+	const CefString & SuggestedName,
+	CefRefPtr<CefBeforeDownloadCallback> Callback)
 {
-	UNREFERENCED_PARAMETER(browser);
-	UNREFERENCED_PARAMETER(download_item);
+	UNREFERENCED_PARAMETER(Browser);
+	UNREFERENCED_PARAMETER(DownloadItem);
 
 	//We use this concatenation method to mix c_str with regular FString and then convert the result back to c_str
-	FString downloadPath = UtilityBLUIDownloadsFolder() + FString(suggested_name.c_str());
+	FString DownloadPath = UtilityBLUIDownloadsFolder() + FString(SuggestedName.c_str());
 
-	callback->Continue(*downloadPath, false);	//don't show the download dialog, just go for it
+	Callback->Continue(*DownloadPath, false);	//don't show the download dialog, just go for it
 
-	UE_LOG(LogClass, Log, TEXT("Downloading file for path %s"), *downloadPath);
+	UE_LOG(LogClass, Log, TEXT("Downloading file for path %s"), *DownloadPath);
 }
 
 void BrowserClient::OnDownloadUpdated(
