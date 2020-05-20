@@ -211,6 +211,10 @@ public:
 
 	void BeginDestroy() override;
 
+	/** Use this to pause the tick loop in the new system */
+	UFUNCTION(BlueprintCallable, Category = "Blu")
+	static void SetShouldTickEventLoop(bool ShouldTick = true);
+
 protected:
 
 	CefWindowInfo Info;
@@ -231,6 +235,10 @@ protected:
 
 	// Helper for processing key modifiers
 	void ProcessKeyMods(FInputEvent InKey);
+
+	void SpawnTickEventLoopIfNeeded();
+
+	static FTickEventLoopData EventLoopData;
 
 	// Store UI state in this UTexture2D
 	UPROPERTY()

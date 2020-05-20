@@ -30,7 +30,7 @@ UBluJsonObj* UBluBlueprintFunctionLibrary::NewBluJSONObj(UObject* WorldContextOb
 
 void UBluBlueprintFunctionLibrary::RunBluEventLoop()
 {
-	BluManager::doBluMessageLoop();
+	BluManager::DoBluMessageLoop();
 }
 
 UBluJsonObj* UBluBlueprintFunctionLibrary::ParseJSON(const FString& JSONString)

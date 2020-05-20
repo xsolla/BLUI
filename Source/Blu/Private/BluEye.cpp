@@ -2,6 +2,8 @@
 #include "BluEye.h"
 #include "RenderHandler.h"
 
+FTickEventLoopData UBluEye::EventLoopData = FTickEventLoopData();
+
 FBluEyeSettings::FBluEyeSettings()
 {
 	FrameRate = 60.f;
@@ -95,6 +97,8 @@ void UBluEye::Init()
 	LoadURL(DefaultURL);
 	ResetTexture();
 
+	//Instead of manually ticking, we now tick whenever one blu eye is created
+	SpawnTickEventLoopIfNeeded();
 }
 
 void UBluEye::ResetTexture()
@@ -618,6 +622,25 @@ void UBluEye::ProcessKeyMods(FInputEvent InKey)
 
 }
 
+void UBluEye::SpawnTickEventLoopIfNeeded()
+{
+	if (!EventLoopData.DelegateHandle.IsValid())
+	{
+		EventLoopData.DelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([](float DeltaTime)
+		{
+			if (EventLoopData.bShouldTickEventLoop)
+			{
+				//UE_LOG(LogTemp, Log, TEXT("Delta: %1.2f"), DeltaTime);
+				BluManager::DoBluMessageLoop();
+			}
+			
+			return true;
+		}));
+	}
+
+	EventLoopData.EyeCount++;
+}
+
 UTexture2D* UBluEye::GetTexture() const
 {
 	if (!Texture)
@@ -687,5 +710,18 @@ void UBluEye::BeginDestroy()
 
 	DestroyTexture();
 	SetFlags(RF_BeginDestroyed);
+
+	//Remove our auto-ticking setup
+	EventLoopData.EyeCount--;
+	if (EventLoopData.EyeCount <= 0)
+	{
+		FTicker::GetCoreTicker().RemoveTicker(EventLoopData.DelegateHandle);
+		EventLoopData.DelegateHandle = FDelegateHandle();
+	}
 	Super::BeginDestroy();
+}
+
+void UBluEye::SetShouldTickEventLoop(bool ShouldTick /*= true*/)
+{
+	EventLoopData.bShouldTickEventLoop = ShouldTick;
 }

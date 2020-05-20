@@ -49,7 +49,7 @@ void BluManager::OnBeforeCommandLineProcessing(const CefString& process_type,
 
 }
 
-void BluManager::doBluMessageLoop()
+void BluManager::DoBluMessageLoop()
 {
 	CefDoMessageLoopWork();
 }

@@ -3,6 +3,20 @@
 #include "CoreMinimal.h"
 #include "BluTypes.generated.h"
 
+struct FTickEventLoopData
+{
+	FDelegateHandle DelegateHandle;
+	int32 EyeCount;
+	bool bShouldTickEventLoop;
+
+	FTickEventLoopData()
+	{
+		DelegateHandle = FDelegateHandle();
+		EyeCount = 0;
+		bShouldTickEventLoop = true;
+	}
+};
+
 struct FBluTextureParams
 {
 	// Pointer to our Texture's resource
