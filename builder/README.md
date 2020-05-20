@@ -1,4 +1,4 @@
-### BLUI Build Script
+### BLUI CEF Chromium Build Script
 
 #### Windows Steps
 
