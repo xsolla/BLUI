@@ -9,8 +9,8 @@ public:
 	BluManager();
 
 	static void doBluMessageLoop();
-	static CefSettings settings;
-	static CefMainArgs main_args;
+	static CefSettings Settings;
+	static CefMainArgs MainArgs;
 	static bool CPURenderSettings;
 	static bool AutoPlay;
 

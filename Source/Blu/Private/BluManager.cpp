@@ -54,7 +54,7 @@ void BluManager::doBluMessageLoop()
 	CefDoMessageLoopWork();
 }
 
-CefSettings BluManager::settings;
-CefMainArgs BluManager::main_args;
+CefSettings BluManager::Settings;
+CefMainArgs BluManager::MainArgs;
 bool BluManager::CPURenderSettings = false;
 bool BluManager::AutoPlay = true;
