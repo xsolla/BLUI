@@ -22,7 +22,7 @@ UBluJsonObj* UBluBlueprintFunctionLibrary::NewBluJSONObj(UObject* WorldContextOb
 {
 
 	UBluJsonObj* JsonObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
-	JsonObj->init("{}");
+	JsonObj->Init("{}");
 	
 	return JsonObj;
 
@@ -37,7 +37,7 @@ UBluJsonObj* UBluBlueprintFunctionLibrary::ParseJSON(const FString& JSONString)
 {
 
 	UBluJsonObj* JsonObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
-	JsonObj->init(JSONString);
+	JsonObj->Init(JSONString);
 
 	return JsonObj;
 
@@ -51,7 +51,7 @@ FString UBluBlueprintFunctionLibrary::JSONToString(UBluJsonObj *ObjectToParse)
 	TSharedRef<TJsonWriter<TCHAR>> writer = TJsonWriterFactory<TCHAR>::Create(&ReturnString);
 
 	// Convert the JSON object to an FString
-	FJsonSerializer::Serialize(ObjectToParse->getJsonObj().ToSharedRef(), writer);
+	FJsonSerializer::Serialize(ObjectToParse->GetJsonObj().ToSharedRef(), writer);
 
 	return ReturnString;
 

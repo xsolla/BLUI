@@ -7,207 +7,177 @@ UBluJsonObj::UBluJsonObj(const class FObjectInitializer& PCIP)
 
 }
 
-void UBluJsonObj::init(const FString &StringData)
+void UBluJsonObj::Init(const FString &StringData)
 {
-
 	StrData = *StringData;
 
 	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(StringData);
-	doParseJson(JsonReader);
-
+	DoParseJson(JsonReader);
 }
 
-FString UBluJsonObj::getStringValue(const FString &index)
+FString UBluJsonObj::GetStringValue(const FString& Index)
 {
-
-	return JsonParsed->GetStringField(index);
-
+	return JsonParsed->GetStringField(Index);
 }
 
-bool UBluJsonObj::getBooleanValue(const FString &index)
+bool UBluJsonObj::GetBooleanValue(const FString &Index)
 {
-
-	return JsonParsed->GetBoolField(index);
-
+	return JsonParsed->GetBoolField(Index);
 }
 
-float UBluJsonObj::getNumValue(const FString &index)
+float UBluJsonObj::GetNumValue(const FString &Index)
 {
-
-	return JsonParsed->GetNumberField(index);
-
+	return JsonParsed->GetNumberField(Index);
 }
 
-UBluJsonObj* UBluJsonObj::getNestedObject(const FString &index)
+UBluJsonObj* UBluJsonObj::GetNestedObject(const FString &Index)
 {
-
-	TSharedPtr<FJsonObject> newJson = JsonParsed->GetObjectField(index);
+	TSharedPtr<FJsonObject> newJson = JsonParsed->GetObjectField(Index);
 
 	if (!newJson.IsValid())
 	{
 		return nullptr;
 	}
 
-	// Make our new temp obj
-	UBluJsonObj* tempObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
-	tempObj->setJsonObj(newJson);
+	// Make our new Temp obj
+	UBluJsonObj* TempObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
+	TempObj->SetJsonObj(newJson);
 
 	// return it
-	return tempObj;
-
+	return TempObj;
 }
 
-TArray<float> UBluJsonObj::getNumArray(const FString &index)
+TArray<float> UBluJsonObj::GetNumArray(const FString &Index)
 {
+	TArray<float> Temp;
 
-	TArray<float> temp;
-
-	for (TSharedPtr<FJsonValue> val : JsonParsed->GetArrayField(index))
+	for (TSharedPtr<FJsonValue> Val : JsonParsed->GetArrayField(Index))
 	{
 
-		temp.Add(val->AsNumber());
+		Temp.Add(Val->AsNumber());
 
 	}
 
-	return temp;
-
+	return Temp;
 }
 
-TArray<bool> UBluJsonObj::getBooleanArray(const FString &index)
+TArray<bool> UBluJsonObj::GetBooleanArray(const FString &Index)
 {
+	TArray<bool> Temp;
 
-	TArray<bool> temp;
-
-	for (TSharedPtr<FJsonValue> val : JsonParsed->GetArrayField(index))
+	for (TSharedPtr<FJsonValue> Val : JsonParsed->GetArrayField(Index))
 	{
 
-		temp.Add(val->AsBool());
+		Temp.Add(Val->AsBool());
 
 	}
 
-	return temp;
-
+	return Temp;
 }
 
-TArray<FString> UBluJsonObj::getStringArray(const FString &index)
+TArray<FString> UBluJsonObj::GetStringArray(const FString &Index)
 {
+	TArray<FString> Temp;
 
-	TArray<FString> temp;
-
-	for (TSharedPtr<FJsonValue> val : JsonParsed->GetArrayField(index))
+	for (TSharedPtr<FJsonValue> Val : JsonParsed->GetArrayField(Index))
 	{
 
-		temp.Add(val->AsString());
+		Temp.Add(Val->AsString());
 
 	}
 
-	return temp;
-
+	return Temp;
 }
 
 
-void UBluJsonObj::setStringValue(const FString &value, const FString &index)
+void UBluJsonObj::SetStringValue(const FString &Value, const FString &Index)
 {
-
-	JsonParsed->SetStringField(index, value);
-
+	JsonParsed->SetStringField(Index, Value);
 }
 
-void UBluJsonObj::setNumValue(const float value, const FString &index)
+void UBluJsonObj::SetNumValue(const float Value, const FString &Index)
 {
-
-	JsonParsed->SetNumberField(index, value);
-
+	JsonParsed->SetNumberField(Index, Value);
 }
 
-void UBluJsonObj::setBooleanValue(const bool value, const FString &index)
+void UBluJsonObj::SetBooleanValue(const bool Value, const FString &Index)
 {
-
-	JsonParsed->SetBoolField(index, value);
-
+	JsonParsed->SetBoolField(Index, Value);
 }
 
-void UBluJsonObj::setNestedObject(UBluJsonObj *value, const FString &index)
+void UBluJsonObj::SetNestedObject(UBluJsonObj *Value, const FString &Index)
 {
-
-	JsonParsed->SetObjectField(index, value->getJsonObj());
-
+	JsonParsed->SetObjectField(Index, Value->GetJsonObj());
 }
 
-void UBluJsonObj::setJsonObj(TSharedPtr<FJsonObject> NewJson)
+void UBluJsonObj::SetJsonObj(TSharedPtr<FJsonObject> NewJson)
 {
-
 	// Set our new stored JSON object
 	JsonParsed = NewJson;
-
 }
 
-TSharedPtr<FJsonObject> UBluJsonObj::getJsonObj()
+TSharedPtr<FJsonObject> UBluJsonObj::GetJsonObj()
 {
-
 	return JsonParsed;
-
 }
 
-void UBluJsonObj::doParseJson(TSharedRef<TJsonReader<TCHAR>> JsonReader)
+void UBluJsonObj::DoParseJson(TSharedRef<TJsonReader<TCHAR>> JsonReader)
 {
-
 	if (!FJsonSerializer::Deserialize(JsonReader, JsonParsed))
 	{
 		UE_LOG(LogBlu, Warning, TEXT("JSON STRING FAILED TO PARSE! WILL DEFAULT TO EMPTY OBJECT {}"));
 
 		// Make an empty json object to prevent crashing
-		doParseJson(TJsonReaderFactory<TCHAR>::Create("{}"));
+		DoParseJson(TJsonReaderFactory<TCHAR>::Create("{}"));
 	}
-
 }
 
 // CUSTOM ADDED START
-void UBluJsonObj::setStringArray(const TArray<FString> &value, const FString &index)
+void UBluJsonObj::SetStringArray(const TArray<FString> &Value, const FString &Index)
 {
-	TArray<TSharedPtr<FJsonValue>> valueArray;
+	TArray<TSharedPtr<FJsonValue>> ValueArray;
 
-	for (FString val : value)
+	for (FString Val : Value)
 	{
-		valueArray.Add(MakeShareable(new FJsonValueString(val)));
+		ValueArray.Add(MakeShareable(new FJsonValueString(Val)));
 	}
 
-	JsonParsed->SetArrayField(index, valueArray);
+	JsonParsed->SetArrayField(Index, ValueArray);
 }
 
-void UBluJsonObj::setBooleanArray(const TArray<bool> &value, const FString &index)
+void UBluJsonObj::SetBooleanArray(const TArray<bool> &Value, const FString &Index)
 {
-	TArray<TSharedPtr<FJsonValue>> valueArray;
+	TArray<TSharedPtr<FJsonValue>> ValueArray;
 
-	for (bool val : value)
+	for (bool Val : Value)
 	{
-		valueArray.Add(MakeShareable(new FJsonValueBoolean(val)));
+		ValueArray.Add(MakeShareable(new FJsonValueBoolean(Val)));
 	}
 
-	JsonParsed->SetArrayField(index, valueArray);
+	JsonParsed->SetArrayField(Index, ValueArray);
 }
 
-void UBluJsonObj::setNumArray(const TArray<float> &value, const FString &index)
+void UBluJsonObj::SetNumArray(const TArray<float> &Value, const FString &Index)
 {
-	TArray<TSharedPtr<FJsonValue>> valueArray;
+	TArray<TSharedPtr<FJsonValue>> ValueArray;
 
-	for (float val : value)
+	for (float Val : Value)
 	{
-		valueArray.Add(MakeShareable(new FJsonValueNumber(val)));
+		ValueArray.Add(MakeShareable(new FJsonValueNumber(Val)));
 	}
 
-	JsonParsed->SetArrayField(index, valueArray);
+	JsonParsed->SetArrayField(Index, ValueArray);
 }
 
-void UBluJsonObj::setObjectArray(const TArray<UBluJsonObj*> &value, const FString &index)
+void UBluJsonObj::SetObjectArray(const TArray<UBluJsonObj*> &Value, const FString &Index)
 {
-	TArray<TSharedPtr<FJsonValue>> valueArray;
+	TArray<TSharedPtr<FJsonValue>> ValueArray;
 
-	for (UBluJsonObj* val : value)
+	for (UBluJsonObj* Val : Value)
 	{
-		valueArray.Add(MakeShareable(new FJsonValueObject(val->getJsonObj())));
+		ValueArray.Add(MakeShareable(new FJsonValueObject(Val->GetJsonObj())));
 	}
 
-	JsonParsed->SetArrayField(index, valueArray);
+	JsonParsed->SetArrayField(Index, ValueArray);
 }
 // CUSTOM ADDED END

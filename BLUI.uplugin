@@ -5,7 +5,7 @@
 	"VersionName": "3.9.0",
 	"Description": "Chromium Embedded Framework (CEF) powered HTML UI and HUD for Unreal Engine 4",
 	"Category": "UI",
-	"CreatedBy": "Aaron M. Shea & Contributors",
+	"CreatedBy": "Aaron M. Shea, Getnamo, & Contributors",
 	"CreatedByURL": "github.com/aaronShea",
 	"DocsURL": "https://github.com/getnamo/BLUI",
 	"EnabledByDefault" : true,
