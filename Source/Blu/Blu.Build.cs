@@ -21,23 +21,19 @@ public class Blu : ModuleRules
 
 	public Blu(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		PrivatePCHHeaderFile = "Private/BluPrivatePCH.h";
-
 		PublicDependencyModuleNames.AddRange(
-			new string[]
-		{
-			"Core",
-			"CoreUObject",
-			"Engine",
-			"InputCore",
-			"RenderCore",
-			"RHI",
-			"Slate",
-			"SlateCore",
-			"UMG",
-			"Json"
-		});
+			new string[] {
+				"Core",
+				"CoreUObject",
+				"Engine",
+				"InputCore",
+				"RenderCore",
+				"RHI",
+				"Slate",
+				"SlateCore",
+				"UMG",
+				"Json"
+			});
 
 		PrivateIncludePaths.AddRange(
 			new string[] {
@@ -98,9 +94,8 @@ public class Blu : ModuleRules
 
 			if(!Target.bBuildEditor)
 			{
-				AdditionalBundleResources.Add(new UEBuildBundleResource(Path.Combine(frameworkPath, "Chromium Embedded Framework"), "MacOS", false));
+				AdditionalBundleResources.Add(new BundleResource(Path.Combine(frameworkPath, "Chromium Embedded Framework"), "MacOS", false));
 			}
-
 		}
 		else
 		{

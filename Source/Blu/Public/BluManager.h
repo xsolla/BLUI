@@ -21,8 +21,7 @@ THIRD_PARTY_INCLUDES_END
 
 class BLU_API BluManager : public CefApp
 {
-
-	public:
+public:
 
 	BluManager();
 
@@ -36,6 +35,5 @@ class BLU_API BluManager : public CefApp
 			CefRefPtr< CefCommandLine > command_line) override;
 
 	IMPLEMENT_REFCOUNTING(BluManager);
-
 };
 

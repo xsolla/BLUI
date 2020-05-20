@@ -1,6 +1,4 @@
 #include "RenderHandler.h"
-#include "BluPrivatePCH.h"
-#include "BluEye.h"
 
 RenderHandler::RenderHandler(int32 width, int32 height, UBluEye* ui)
 {

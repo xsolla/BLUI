@@ -1,5 +1,5 @@
+
 #include "BluEye.h"
-#include "BluPrivatePCH.h"
 #include "RenderHandler.h"
 
 FBluEyeSettings::FBluEyeSettings()
@@ -215,7 +215,6 @@ void UBluEye::ExecuteJSMethodWithParams(const FString& methodName, const TArray<
 
 	// time to call the function
 	ExecuteJS(methodName + paramString);
-
 }
 
 void UBluEye::LoadURL(const FString& newURL)

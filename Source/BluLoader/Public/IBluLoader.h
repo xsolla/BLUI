@@ -4,6 +4,8 @@
 #pragma once
 #include "Modules/ModuleManager.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogBluLoader, Log, All);
+
 class IBluLoader : public IModuleInterface
 {
 public:

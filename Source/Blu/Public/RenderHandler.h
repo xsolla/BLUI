@@ -1,6 +1,10 @@
 #pragma once
 
-#include "BluEye.h"
+#include "BluTypes.h"
+//#include "BluEye.h"
+class UBluEye;
+
+
 
 #if PLATFORM_WINDOWS
 #include "Windows/WindowsHWrapper.h"

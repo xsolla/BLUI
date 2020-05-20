@@ -4,6 +4,8 @@
 #pragma once
 #include "Modules/ModuleManager.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogBlu, Log, All);
+
 class IBlu : public IModuleInterface
 {
 public:
@@ -28,5 +30,4 @@ public:
 	{
 		return FModuleManager::Get().IsModuleLoaded("Blu");
 	}
-
 };
