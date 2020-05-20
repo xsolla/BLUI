@@ -91,10 +91,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Blu")
 	float GetZoom();
 
-	//Not ready yet
-	//UFUNCTION(BlueprintCallable, Category = "Blu Test")
-	void Test();
-
 	/** Download a file */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
 	void DownloadFile(const FString& fileUrl);
@@ -232,10 +228,10 @@ protected:
 	void ResetMatInstance();
 		
 	// Parse UE4 key events, helper
-	void processKeyCode(FKeyEvent InKey);
+	void ProcessKeyCode(FKeyEvent InKey);
 
 	// Helper for processing key modifiers
-	void processKeyMods(FInputEvent InKey);
+	void ProcessKeyMods(FInputEvent InKey);
 
 	// Store UI state in this UTexture2D
 	UPROPERTY()

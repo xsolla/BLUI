@@ -269,14 +269,6 @@ float UBluEye::GetZoom()
 	return Browser->GetHost()->GetZoomLevel();
 }
 
-void UBluEye::Test()
-{
-	/*CefRefPtr<CefNavigationEntryVisitor> visitor;
-	browser->GetHost->GetNavigationEntries(visitor, false);*/
-
-	//for (auto in visitor)
-}
-
 void UBluEye::DownloadFile(const FString& fileUrl)
 {
 	Browser->GetHost()->StartDownload(*fileUrl);
@@ -481,8 +473,8 @@ void UBluEye::TriggerMouseWheel(const float MouseWheelDelta, const FVector2D& po
 void UBluEye::KeyDown(FKeyEvent InKey)
 {
 
-	processKeyMods(InKey);
-	processKeyCode(InKey);
+	ProcessKeyMods(InKey);
+	ProcessKeyCode(InKey);
 
 	KeyEvent.type = KEYEVENT_KEYDOWN;
 	Browser->GetHost()->SendKeyEvent(KeyEvent);
@@ -492,8 +484,8 @@ void UBluEye::KeyDown(FKeyEvent InKey)
 void UBluEye::KeyUp(FKeyEvent InKey)
 {
 
-	processKeyMods(InKey);
-	processKeyCode(InKey);
+	ProcessKeyMods(InKey);
+	ProcessKeyCode(InKey);
 
 	KeyEvent.type = KEYEVENT_KEYUP;
 	Browser->GetHost()->SendKeyEvent(KeyEvent);
@@ -509,7 +501,7 @@ void UBluEye::KeyPress(FKeyEvent InKey)
 
 }
 
-void UBluEye::processKeyCode(FKeyEvent InKey)
+void UBluEye::ProcessKeyCode(FKeyEvent InKey)
 {
 	KeyEvent.native_key_code = InKey.GetKeyCode();
 	KeyEvent.windows_key_code = InKey.GetKeyCode();
@@ -519,7 +511,7 @@ void UBluEye::CharKeyInput(FCharacterEvent CharEvent)
 {
 
 	// Process keymods like usual
-	processKeyMods(CharEvent);
+	ProcessKeyMods(CharEvent);
 
 	// Below char input needs some special treatment, se we can't use the normal key down/up methods
 
@@ -536,7 +528,7 @@ void UBluEye::CharKeyInput(FCharacterEvent CharEvent)
 void UBluEye::CharKeyDownUp(FCharacterEvent CharEvent)
 {
 	// Process keymods like usual
-	processKeyMods(CharEvent);
+	ProcessKeyMods(CharEvent);
 
 	// Below char input needs some special treatment, se we can't use the normal key down/up methods
 
@@ -600,7 +592,7 @@ void UBluEye::SpecialKeyPress(EBluSpecialKeys key, bool LeftShiftDown,
 
 }
 
-void UBluEye::processKeyMods(FInputEvent InKey)
+void UBluEye::ProcessKeyMods(FInputEvent InKey)
 {
 
 	int mods = 0;
