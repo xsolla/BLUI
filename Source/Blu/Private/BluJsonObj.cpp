@@ -32,16 +32,16 @@ float UBluJsonObj::GetNumValue(const FString &Index)
 
 UBluJsonObj* UBluJsonObj::GetNestedObject(const FString &Index)
 {
-	TSharedPtr<FJsonObject> newJson = JsonParsed->GetObjectField(Index);
+	TSharedPtr<FJsonObject> NewJson = JsonParsed->GetObjectField(Index);
 
-	if (!newJson.IsValid())
+	if (!NewJson.IsValid())
 	{
 		return nullptr;
 	}
 
 	// Make our new Temp obj
 	UBluJsonObj* TempObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
-	TempObj->SetJsonObj(newJson);
+	TempObj->SetJsonObj(NewJson);
 
 	// return it
 	return TempObj;

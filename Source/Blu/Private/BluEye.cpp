@@ -48,8 +48,8 @@ void UBluEye::Init()
 	BrowserSettings.universal_access_from_file_urls = STATE_ENABLED;
 	BrowserSettings.file_access_from_file_urls = STATE_ENABLED;
 
-	//browserSettings.web_security = STATE_DISABLED;
-	//browserSettings.fullscreen_enabled = true;
+	//BrowserSettings.web_security = STATE_DISABLED;
+	//BrowserSettings.fullscreen_enabled = true;
 
 	Info.width = Settings.Width;
 	Info.height = Settings.Height;
@@ -89,7 +89,6 @@ void UBluEye::Init()
 	ClientHandler->SetLogEmitter(&LogEventEmitter);
 
 	UE_LOG(LogBlu, Log, TEXT("Component Initialized"));
-	CefString str = *DefaultURL;
 	UE_LOG(LogBlu, Log, TEXT("Loading URL: %s"), *DefaultURL);
 
 	// Load the default URL
@@ -188,31 +187,31 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 
 }
 
-void UBluEye::ExecuteJS(const FString& code)
+void UBluEye::ExecuteJS(const FString& Code)
 {
-	CefString codeStr = *code;
-	Browser->GetMainFrame()->ExecuteJavaScript(codeStr, "", 0);
+	CefString CodeStr = *Code;
+	Browser->GetMainFrame()->ExecuteJavaScript(CodeStr, "", 0);
 }
 
 void UBluEye::ExecuteJSMethodWithParams(const FString& methodName, const TArray<FString> params)
 {
 
 	// Empty param string
-	FString paramString = "(";
+	FString ParamString = "(";
 
 	// Build the param string
 	for (FString param : params)
 	{
-		paramString += param;
-		paramString += ",";
+		ParamString += param;
+		ParamString += ",";
 	}
 		
 	// Remove the last , it's not needed
-	paramString.RemoveFromEnd(",");
-	paramString += ");";
+	ParamString.RemoveFromEnd(",");
+	ParamString += ");";
 
 	// time to call the function
-	ExecuteJS(methodName + paramString);
+	ExecuteJS(methodName + ParamString);
 }
 
 void UBluEye::LoadURL(const FString& newURL)
@@ -259,9 +258,9 @@ FString UBluEye::GetCurrentURL()
 	return FString(Browser->GetMainFrame()->GetURL().c_str());
 }
 
-void UBluEye::SetZoom(const float scale /*= 1*/)
+void UBluEye::SetZoom(const float Scale /*= 1*/)
 {
-	Browser->GetHost()->SetZoomLevel(scale);
+	Browser->GetHost()->SetZoomLevel(Scale);
 }
 
 float UBluEye::GetZoom()
@@ -269,9 +268,9 @@ float UBluEye::GetZoom()
 	return Browser->GetHost()->GetZoomLevel();
 }
 
-void UBluEye::DownloadFile(const FString& fileUrl)
+void UBluEye::DownloadFile(const FString& FileUrl)
 {
-	Browser->GetHost()->StartDownload(*fileUrl);
+	Browser->GetHost()->StartDownload(*FileUrl);
 	//Todo: ensure downloading works in some way, shape or form?
 }
 
@@ -407,65 +406,65 @@ UBluEye* UBluEye::SetProperties(const int32 SetWidth,
 	return this;
 }
 
-void UBluEye::TriggerMouseMove(const FVector2D& pos, const float scale)
+void UBluEye::TriggerMouseMove(const FVector2D& Pos, const float Scale)
 {
 
-	MouseEvent.x = pos.X / scale;
-	MouseEvent.y = pos.Y / scale;
+	MouseEvent.x = Pos.X / Scale;
+	MouseEvent.y = Pos.Y / Scale;
 
 	Browser->GetHost()->SendFocusEvent(true);
 	Browser->GetHost()->SendMouseMoveEvent(MouseEvent, false);
 
 }
 
-void UBluEye::TriggerLeftClick(const FVector2D& pos, const float scale)
+void UBluEye::TriggerLeftClick(const FVector2D& Pos, const float Scale)
 {
-	TriggerLeftMouseDown(pos, scale);
-	TriggerLeftMouseUp(pos, scale);
+	TriggerLeftMouseDown(Pos, Scale);
+	TriggerLeftMouseUp(Pos, Scale);
 }
 
-void UBluEye::TriggerRightClick(const FVector2D& pos, const float scale)
+void UBluEye::TriggerRightClick(const FVector2D& Pos, const float Scale)
 {
-	TriggerRightMouseDown(pos, scale);
-	TriggerRightMouseUp(pos, scale);
+	TriggerRightMouseDown(Pos, Scale);
+	TriggerRightMouseUp(Pos, Scale);
 }
 
-void UBluEye::TriggerLeftMouseDown(const FVector2D& pos, const float scale)
+void UBluEye::TriggerLeftMouseDown(const FVector2D& Pos, const float Scale)
 {
-	MouseEvent.x = pos.X / scale;
-	MouseEvent.y = pos.Y / scale;
+	MouseEvent.x = Pos.X / Scale;
+	MouseEvent.y = Pos.Y / Scale;
 
 	Browser->GetHost()->SendMouseClickEvent(MouseEvent, MBT_LEFT, false, 1);
 }
 
-void UBluEye::TriggerRightMouseDown(const FVector2D& pos, const float scale)
+void UBluEye::TriggerRightMouseDown(const FVector2D& Pos, const float Scale)
 {
-	MouseEvent.x = pos.X / scale;
-	MouseEvent.y = pos.Y / scale;
+	MouseEvent.x = Pos.X / Scale;
+	MouseEvent.y = Pos.Y / Scale;
 
 	Browser->GetHost()->SendMouseClickEvent(MouseEvent, MBT_RIGHT, false, 1);
 }
 
-void UBluEye::TriggerLeftMouseUp(const FVector2D& pos, const float scale)
+void UBluEye::TriggerLeftMouseUp(const FVector2D& Pos, const float Scale)
 {
-	MouseEvent.x = pos.X / scale;
-	MouseEvent.y = pos.Y / scale;
+	MouseEvent.x = Pos.X / Scale;
+	MouseEvent.y = Pos.Y / Scale;
 
 	Browser->GetHost()->SendMouseClickEvent(MouseEvent, MBT_LEFT, true, 1);
 }
 
-void UBluEye::TriggerRightMouseUp(const FVector2D& pos, const float scale)
+void UBluEye::TriggerRightMouseUp(const FVector2D& Pos, const float Scale)
 {
-	MouseEvent.x = pos.X / scale;
-	MouseEvent.y = pos.Y / scale;
+	MouseEvent.x = Pos.X / Scale;
+	MouseEvent.y = Pos.Y / Scale;
 
 	Browser->GetHost()->SendMouseClickEvent(MouseEvent, MBT_RIGHT, true, 1);
 }
 
-void UBluEye::TriggerMouseWheel(const float MouseWheelDelta, const FVector2D& pos, const float scale)
+void UBluEye::TriggerMouseWheel(const float MouseWheelDelta, const FVector2D& Pos, const float Scale)
 {
-	MouseEvent.x = pos.X / scale;
-	MouseEvent.y = pos.Y / scale;
+	MouseEvent.x = Pos.X / Scale;
+	MouseEvent.y = Pos.Y / Scale;
 
 	Browser->GetHost()->SendMouseWheelEvent(MouseEvent, MouseWheelDelta * 10, MouseWheelDelta * 10);
 }
@@ -545,7 +544,7 @@ void UBluEye::CharKeyDownUp(FCharacterEvent CharEvent)
 	Browser->GetHost()->SendKeyEvent(KeyEvent);
 }
 
-void UBluEye::RawCharKeyPress(const FString charToPress, bool isRepeat,
+void UBluEye::RawCharKeyPress(const FString CharToPress, bool isRepeat,
 	bool LeftShiftDown,
 	bool RightShiftDown,
 	bool LeftControlDown,
@@ -560,13 +559,13 @@ void UBluEye::RawCharKeyPress(const FString charToPress, bool isRepeat,
 	FModifierKeysState* KeyState = new FModifierKeysState(LeftShiftDown, RightShiftDown, LeftControlDown, 
 		RightControlDown, LeftAltDown, RightAltDown, LeftCommandDown, RightCommandDown, CapsLocksOn);
 
-	FCharacterEvent* CharEvent = new FCharacterEvent(charToPress.GetCharArray()[0], *KeyState, 0, isRepeat);
+	FCharacterEvent* CharEvent = new FCharacterEvent(CharToPress.GetCharArray()[0], *KeyState, 0, isRepeat);
 
 	CharKeyInput(*CharEvent);
 
 }
 
-void UBluEye::SpecialKeyPress(EBluSpecialKeys key, bool LeftShiftDown,
+void UBluEye::SpecialKeyPress(EBluSpecialKeys Key, bool LeftShiftDown,
 	bool RightShiftDown,
 	bool LeftControlDown,
 	bool RightControlDown,
@@ -577,15 +576,15 @@ void UBluEye::SpecialKeyPress(EBluSpecialKeys key, bool LeftShiftDown,
 	bool CapsLocksOn)
 {
 
-	int32 keyValue = key;
+	int32 KeyValue = Key;
 
-	KeyEvent.windows_key_code = keyValue;
-	KeyEvent.native_key_code = keyValue;
+	KeyEvent.windows_key_code = KeyValue;
+	KeyEvent.native_key_code = KeyValue;
 	KeyEvent.type = KEYEVENT_KEYDOWN;
 	Browser->GetHost()->SendKeyEvent(KeyEvent);
 
-	KeyEvent.windows_key_code = keyValue;
-	KeyEvent.native_key_code = keyValue;
+	KeyEvent.windows_key_code = KeyValue;
+	KeyEvent.native_key_code = KeyValue;
 	// bits 30 and 31 should be always 1 for WM_KEYUP
 	KeyEvent.type = KEYEVENT_KEYUP;
 	Browser->GetHost()->SendKeyEvent(KeyEvent);
@@ -595,27 +594,27 @@ void UBluEye::SpecialKeyPress(EBluSpecialKeys key, bool LeftShiftDown,
 void UBluEye::ProcessKeyMods(FInputEvent InKey)
 {
 
-	int mods = 0;
+	int Mods = 0;
 
 	// Test alt
 	if (InKey.IsAltDown())
 	{
-		mods |= cef_event_flags_t::EVENTFLAG_ALT_DOWN;
+		Mods |= cef_event_flags_t::EVENTFLAG_ALT_DOWN;
 	}
 	else
 	// Test control
 	if (InKey.IsControlDown())
 	{
-		mods |= cef_event_flags_t::EVENTFLAG_CONTROL_DOWN;
+		Mods |= cef_event_flags_t::EVENTFLAG_CONTROL_DOWN;
 	} 
 	else
 	// Test shift
 	if (InKey.IsShiftDown())
 	{
-		mods |= cef_event_flags_t::EVENTFLAG_SHIFT_DOWN;
+		Mods |= cef_event_flags_t::EVENTFLAG_SHIFT_DOWN;
 	}
 
-	KeyEvent.modifiers = mods;
+	KeyEvent.modifiers = Mods;
 
 }
 

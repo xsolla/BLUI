@@ -211,14 +211,13 @@ public:
 
 	void BeginDestroy() override;
 
-	CefRefPtr<CefBrowser> Browser;
-
 protected:
 
 	CefWindowInfo Info;
 	CefRefPtr<BrowserClient> ClientHandler;
 	CefBrowserSettings BrowserSettings;
 	RenderHandler* Renderer;
+	CefRefPtr<CefBrowser> Browser;
 	
 	CefMouseEvent MouseEvent;
 	CefKeyEvent KeyEvent;
