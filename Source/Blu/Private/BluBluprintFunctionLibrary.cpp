@@ -12,19 +12,19 @@ UBluEye* UBluBlueprintFunctionLibrary::NewBluEye(UObject* WorldContextObject)
 {
 
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	UBluEye* tempObject = Cast<UBluEye>(StaticConstructObject_Internal(UBluEye::StaticClass()));
+	UBluEye* Eye = Cast<UBluEye>(StaticConstructObject_Internal(UBluEye::StaticClass()));
 
-	return tempObject;
+	return Eye;
 
 }
 
 UBluJsonObj* UBluBlueprintFunctionLibrary::NewBluJSONObj(UObject* WorldContextObject)
 {
 
-	UBluJsonObj* tempObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
-	tempObj->init("{}");
+	UBluJsonObj* JsonObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
+	JsonObj->init("{}");
 	
-	return tempObj;
+	return JsonObj;
 
 }
 
@@ -36,10 +36,10 @@ void UBluBlueprintFunctionLibrary::RunBluEventLoop()
 UBluJsonObj* UBluBlueprintFunctionLibrary::ParseJSON(const FString& JSONString)
 {
 
-	UBluJsonObj* tempObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
-	tempObj->init(JSONString);
+	UBluJsonObj* JsonObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
+	JsonObj->init(JSONString);
 
-	return tempObj;
+	return JsonObj;
 
 }
 
@@ -47,13 +47,13 @@ FString UBluBlueprintFunctionLibrary::JSONToString(UBluJsonObj *ObjectToParse)
 {
 
 	// Create the JSON reader
-	FString returnString;
-	TSharedRef<TJsonWriter<TCHAR>> writer = TJsonWriterFactory<TCHAR>::Create(&returnString);
+	FString ReturnString;
+	TSharedRef<TJsonWriter<TCHAR>> writer = TJsonWriterFactory<TCHAR>::Create(&ReturnString);
 
 	// Convert the JSON object to an FString
 	FJsonSerializer::Serialize(ObjectToParse->getJsonObj().ToSharedRef(), writer);
 
-	return returnString;
+	return ReturnString;
 
 }
 
