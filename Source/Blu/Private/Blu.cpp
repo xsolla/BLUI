@@ -32,6 +32,7 @@ class FBlu : public IBlu
 		CefString(&BluManager::Settings.browser_subprocess_path).FromString(realExePath);
 
 		// Set the cache path
+		CefString(&BluManager::Settings.cache_path).FromString(GameDirCef);
 
 		// Make a new manager instance
 		CefRefPtr<BluManager> BluApp = new BluManager();
