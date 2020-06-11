@@ -64,6 +64,7 @@ By default the actor has a BLUI resolution of 1000x1000, you can change this by 
 
 Since 4.0.0 - This actor is no longer needed. Ticking happens internally.
 
+Older verions:
 Instead of ticking in your level bp, I prefer to use a simple actor to do the ticking. Other convenience blueprints may spawn this as necessary so if you use those, you don't ever need to use this directly.
 
 ## Demo Project
