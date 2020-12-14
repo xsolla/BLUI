@@ -159,8 +159,8 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 				return;
 		}
 	 
-		FUpdateTextureRegionsData * RegionData = new FUpdateTextureRegionsData;
-		RegionData->Texture2DResource = (FTexture2DResource*)Texture->Resource;
+		FUpdateTextureRegionsData* RegionData = new FUpdateTextureRegionsData;
+		RegionData->Texture2DResource = (FTextureResource*)Texture->Resource;
 		RegionData->NumRegions = regionCount;
 		RegionData->SrcBpp = 4;
 		RegionData->SrcPitch = Settings.Width * 4;
@@ -175,7 +175,7 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 			{
 				for (uint32 RegionIndex = 0; RegionIndex < RegionData->NumRegions; RegionIndex++)
 				{
-					RHIUpdateTexture2D(RegionData->Texture2DResource->GetTexture2DRHI(), 0, RegionData->Regions[RegionIndex], RegionData->SrcPitch, RegionData->SrcData.GetData()
+					(RegionData->Texture2DResource->TextureRHI->GetTexture2D(), 0, RegionData->Regions[RegionIndex], RegionData->SrcPitch, RegionData->SrcData.GetData()
 						+ RegionData->Regions[RegionIndex].SrcY * RegionData->SrcPitch
 						+ RegionData->Regions[RegionIndex].SrcX * RegionData->SrcBpp);
 				}

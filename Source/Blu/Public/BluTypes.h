@@ -25,7 +25,7 @@ struct FBluTextureParams
 
 struct FUpdateTextureRegionsData
 {
-	FTexture2DResource* Texture2DResource;
+	FTextureResource* Texture2DResource;
 	uint32 NumRegions;
 	FUpdateTextureRegion2D* Regions;
 	uint32 SrcPitch;

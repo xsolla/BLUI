@@ -12,7 +12,8 @@ UBluEye* UBluBlueprintFunctionLibrary::NewBluEye(UObject* WorldContextObject)
 {
 
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	UBluEye* Eye = Cast<UBluEye>(StaticConstructObject_Internal(UBluEye::StaticClass()));
+	FStaticConstructObjectParameters Params(UBluEye::StaticClass());
+	UBluEye* Eye = Cast<UBluEye>(StaticConstructObject_Internal(Params));
 
 	return Eye;
 
