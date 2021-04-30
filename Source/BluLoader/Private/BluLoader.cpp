@@ -13,7 +13,8 @@ class FBluLoader : public IBluLoader
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override
 	{
-		FString LibPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() + "Plugins/BLUI/ThirdParty/cef/");
+		//mini-mod:blui location in this project
+		FString LibPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() + "Plugins/getnamo/BLUI/ThirdParty/cef/");
 
 		// If we're on Windows we need to load DLLs from our custom path
 		#if PLATFORM_WINDOWS
