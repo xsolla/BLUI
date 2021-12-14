@@ -69,13 +69,9 @@ struct FBluEyeSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
 	bool bIsTransparent;
 
-	/** Width of the view resolution */
+	/** Width(X) and Height(Y) of the view resolution */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
-	int32 Width;
-
-	/** Height of the view resolution */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
-	int32 Height;
+	FVector2D ViewSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
 	bool bEnableWebGL;
@@ -85,6 +81,9 @@ struct FBluEyeSettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
 	bool bAutoPlayEnabled;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blu")
+	bool bDebugLogTick;
 
 	FBluEyeSettings();
 };

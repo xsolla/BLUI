@@ -1,4 +1,5 @@
 #include "IBlu.h"
+#include "Interfaces/IPluginManager.h"
 #include "BluManager.h"
 
 class FBlu : public IBlu
@@ -8,7 +9,7 @@ class FBlu : public IBlu
 	virtual void StartupModule() override
 	{
 		CefString GameDirCef = *FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() + "BluCache");
-		FString ExecutablePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() + "Plugins/BLUI/ThirdParty/cef/");
+		FString ExecutablePath = FPaths::ConvertRelativePathToFull(IPluginManager::Get().FindPlugin("BLUI")->GetBaseDir() + "/ThirdParty/cef/");
 
 		// Setup the default settings for BluManager
 		BluManager::Settings.windowless_rendering_enabled = true;

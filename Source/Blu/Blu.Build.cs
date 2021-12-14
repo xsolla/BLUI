@@ -26,6 +26,7 @@ public class Blu : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+				"Projects",
 				"InputCore",
 				"RenderCore",
 				"RHI",
