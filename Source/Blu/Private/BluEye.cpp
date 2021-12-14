@@ -8,13 +8,14 @@ FBluEyeSettings::FBluEyeSettings()
 {
 	FrameRate = 60.f;
 
-	Width = 1280;
-	Height = 720;
+	ViewSize.X = 1280;
+	ViewSize.Y = 720;
 
 	bIsTransparent = false;
 	bEnableWebGL = true;
 	bAudioMuted = false;
 	bAutoPlayEnabled = true;
+	bDebugLogTick = false;
 }
 
 UBluEye::UBluEye(const class FObjectInitializer& PCIP)
@@ -41,7 +42,7 @@ void UBluEye::Init()
 		}
 	}
 	
-	if (Settings.Width <= 0 || Settings.Height <= 0)
+	if (Settings.ViewSize.X <= 0 || Settings.ViewSize.Y <= 0)
 	{
 		UE_LOG(LogBlu, Log, TEXT("Can't initialize when Width or Height are <= 0"));
 		return;
@@ -53,8 +54,8 @@ void UBluEye::Init()
 	//BrowserSettings.web_security = STATE_DISABLED;
 	//BrowserSettings.fullscreen_enabled = true;
 
-	Info.width = Settings.Width;
-	Info.height = Settings.Height;
+	Info.width = (int32)Settings.ViewSize.X;
+	Info.height = (int32)Settings.ViewSize.Y;
 
 	// Set transparant option
 	Info.SetAsWindowless(0); //bIsTransparent
@@ -72,7 +73,7 @@ void UBluEye::Init()
 	//NB: this setting will change it globally for all new instances
 	BluManager::AutoPlay = Settings.bAutoPlayEnabled;
 
-	Renderer = new RenderHandler(Settings.Width, Settings.Height, this);
+	Renderer = new RenderHandler(Settings.ViewSize.X, Settings.ViewSize.Y, this);
 	ClientHandler = new BrowserClient(Renderer);
 	Browser = CefBrowserHost::CreateBrowserSync(
 		Info,
@@ -112,7 +113,7 @@ void UBluEye::ResetTexture()
 	
 
 	// init the new Texture2D
-	Texture = UTexture2D::CreateTransient(Settings.Width, Settings.Height, PF_B8G8R8A8);
+	Texture = UTexture2D::CreateTransient(Settings.ViewSize.X, Settings.ViewSize.Y, PF_B8G8R8A8);
 	Texture->AddToRoot();
 	Texture->UpdateResource();
 
@@ -163,11 +164,11 @@ void UBluEye::TextureUpdate(const void *buffer, FUpdateTextureRegion2D *updateRe
 		RegionData->Texture2DResource = (FTextureResource*)Texture->Resource;
 		RegionData->NumRegions = regionCount;
 		RegionData->SrcBpp = 4;
-		RegionData->SrcPitch = Settings.Width * 4;
+		RegionData->SrcPitch = int32(Settings.ViewSize.X) * 4;
 		RegionData->Regions = updateRegions;
 
 		//We need to copy this memory or it might get uninitialized
-		RegionData->SrcData.SetNumUninitialized(RegionData->SrcPitch * Settings.Height);
+		RegionData->SrcData.SetNumUninitialized(RegionData->SrcPitch * int32(Settings.ViewSize.Y));
 		FPlatformMemory::Memcpy(RegionData->SrcData.GetData(), buffer, RegionData->SrcData.Num());
 
 		ENQUEUE_RENDER_COMMAND(UpdateBLUICommand)(
@@ -329,8 +330,8 @@ UTexture2D* UBluEye::ResizeBrowser(const int32 NewWidth, const int32 NewHeight)
 	bEnabled = false;
 
 	// Set our new Width and Height
-	Settings.Width = NewWidth;
-	Settings.Height = NewHeight;
+	Settings.ViewSize.X = NewWidth;
+	Settings.ViewSize.Y = NewHeight;
 	
 	// Update our render handler
 	Renderer->Width = NewWidth;
@@ -338,7 +339,7 @@ UTexture2D* UBluEye::ResizeBrowser(const int32 NewWidth, const int32 NewHeight)
 
 	bValidTexture = false;
 
-	Texture = UTexture2D::CreateTransient(Settings.Width, Settings.Height, PF_B8G8R8A8);
+	Texture = UTexture2D::CreateTransient(Settings.ViewSize.X, Settings.ViewSize.Y, PF_B8G8R8A8);
 	Texture->AddToRoot();
 	Texture->UpdateResource();
 
@@ -363,8 +364,8 @@ UTexture2D* UBluEye::CropWindow(const int32 Y, const int32 X, const int32 NewWid
 
 
 	// Set our new Width and Height
-	Settings.Width = NewWidth;
-	Settings.Height = NewHeight;
+	Settings.ViewSize.X = NewWidth;
+	Settings.ViewSize.Y = NewHeight;
 
 	// Update our render handler
 	Renderer->Width = NewWidth;
@@ -372,7 +373,7 @@ UTexture2D* UBluEye::CropWindow(const int32 Y, const int32 X, const int32 NewWid
 
 	bValidTexture = false;
 
-	Texture = UTexture2D::CreateTransient(Settings.Width, Settings.Height, PF_B8G8R8A8);
+	Texture = UTexture2D::CreateTransient(Settings.ViewSize.X, Settings.ViewSize.Y, PF_B8G8R8A8);
 	Texture->AddToRoot();
 	Texture->UpdateResource();
 
@@ -395,8 +396,8 @@ UBluEye* UBluEye::SetProperties(const int32 SetWidth,
 	const FName& SetTextureParameterName,
 	UMaterialInterface* SetBaseMaterial)
 {
-	Settings.Width = SetWidth;
-	Settings.Height = SetHeight;
+	Settings.ViewSize.X = SetWidth;
+	Settings.ViewSize.Y = SetHeight;
 
 	bEnabled = SetEnabled;
 
@@ -626,11 +627,14 @@ void UBluEye::SpawnTickEventLoopIfNeeded()
 {
 	if (!EventLoopData.DelegateHandle.IsValid())
 	{
-		EventLoopData.DelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([](float DeltaTime)
+		EventLoopData.DelegateHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([&](float DeltaTime)
 		{
 			if (EventLoopData.bShouldTickEventLoop)
 			{
-				//UE_LOG(LogTemp, Log, TEXT("Delta: %1.2f"), DeltaTime);
+				if (Settings.bDebugLogTick)
+				{
+					UE_LOG(LogTemp, Log, TEXT("Delta: %1.2f"), DeltaTime);
+				}
 				BluManager::DoBluMessageLoop();
 			}
 			
@@ -645,7 +649,7 @@ UTexture2D* UBluEye::GetTexture() const
 {
 	if (!Texture)
 	{
-		return UTexture2D::CreateTransient(Settings.Width, Settings.Height, PF_B8G8R8A8);
+		return UTexture2D::CreateTransient(Settings.ViewSize.X, Settings.ViewSize.Y, PF_B8G8R8A8);
 	}
 
 	return Texture;
