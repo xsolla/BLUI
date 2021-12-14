@@ -11,35 +11,33 @@ public class Blu : ModuleRules
 		get { return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../ThirdParty/")); }
 	}
 
-	private void stageFiles(String[] filesToStage)
+	private void stageFiles(String[] FilesToStage)
 	{
-		foreach (var f in filesToStage)
+		foreach (var File in FilesToStage)
 		{
-			RuntimeDependencies.Add(new RuntimeDependency(f));
+			RuntimeDependencies.Add(File);
 		}
 	}
 
 	public Blu(ReadOnlyTargetRules Target) : base(Target)
 	{
-
-		PublicDependencyModuleNames.AddRange(
-			new string[]
-		{
-			"Core",
-			"CoreUObject",
-			"Engine",
-			"InputCore",
-			"RenderCore",
-			"RHI",
-			"Slate",
-			"SlateCore",
-			"UMG",
-			"Json"
-		});
+        PublicDependencyModuleNames.AddRange(
+			new string[] {
+				"Core",
+				"CoreUObject",
+				"Engine",
+				"InputCore",
+				"RenderCore",
+				"RHI",
+				"Slate",
+				"SlateCore",
+				"UMG",
+				"Json"
+			});
 
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"Blu/Private",
+				Path.Combine(ModuleDirectory, "Private"),
 			});
 
 		if(Target.Platform == UnrealTargetPlatform.Win64)
@@ -61,8 +59,8 @@ public class Blu : ModuleRules
 				});
 
 			// Add our runtime dependencies
-			var filesToStage = Directory.GetFiles(Path.Combine(ThirdPartyPath, "cef/Win/shipping"), "*", SearchOption.AllDirectories);
-			stageFiles(filesToStage);
+			var FilesToStage = Directory.GetFiles(Path.Combine(ThirdPartyPath, "cef/Win/shipping"), "*", SearchOption.AllDirectories);
+			stageFiles(FilesToStage);
 
 		} else if(Target.Platform == UnrealTargetPlatform.Linux)
 		{
@@ -78,9 +76,9 @@ public class Blu : ModuleRules
 		} else if(Target.Platform == UnrealTargetPlatform.Mac)
 		{
 			
-			var frameworkPath = Path.Combine(ThirdPartyPath, "cef/Mac/lib", "Chromium Embedded Framework.framework");
+			var FrameworkPath = Path.Combine(ThirdPartyPath, "cef/Mac/lib", "Chromium Embedded Framework.framework");
 
-			PublicFrameworks.Add(frameworkPath);
+			PublicFrameworks.Add(FrameworkPath);
 			PublicAdditionalLibraries.Add(Path.Combine(ThirdPartyPath, "cef/Mac/lib", "libcef_dll_wrapper.a"));
 
 			PublicIncludePaths.AddRange(
@@ -88,17 +86,16 @@ public class Blu : ModuleRules
 					Path.Combine(ThirdPartyPath, "cef", "Mac")
 				});
 
-			var filesToStage = Directory.GetFiles(Path.Combine(ThirdPartyPath, "cef/Mac/shipping"), "*", SearchOption.AllDirectories);
-			stageFiles(filesToStage);
+			var FilesToStage = Directory.GetFiles(Path.Combine(ThirdPartyPath, "cef/Mac/shipping"), "*", SearchOption.AllDirectories);
+			stageFiles(FilesToStage);
 
-			filesToStage = Directory.GetFiles(Path.Combine(ThirdPartyPath, "cef/Mac/lib"), "*", SearchOption.AllDirectories);
-			stageFiles(filesToStage);
+			FilesToStage = Directory.GetFiles(Path.Combine(ThirdPartyPath, "cef/Mac/lib"), "*", SearchOption.AllDirectories);
+			stageFiles(FilesToStage);
 
 			if(!Target.bBuildEditor)
 			{
-				AdditionalBundleResources.Add(new UEBuildBundleResource(Path.Combine(frameworkPath, "Chromium Embedded Framework"), "MacOS", false));
+				AdditionalBundleResources.Add(new BundleResource(Path.Combine(FrameworkPath, "Chromium Embedded Framework"), "MacOS", false));
 			}
-
 		}
 		else
 		{

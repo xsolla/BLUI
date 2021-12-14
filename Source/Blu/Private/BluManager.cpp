@@ -1,12 +1,11 @@
-#include "BluPrivatePCH.h"
+#include "BluManager.h"
 
 BluManager::BluManager()
 {
-
 }
 
 void BluManager::OnBeforeCommandLineProcessing(const CefString& process_type,
-	CefRefPtr< CefCommandLine > command_line)
+	CefRefPtr< CefCommandLine > CommandLine)
 {
 
 	/////////////////
@@ -18,37 +17,44 @@ void BluManager::OnBeforeCommandLineProcessing(const CefString& process_type,
 	BluManager::CPURenderSettings = false;
 	/////////////////
 
-	command_line->AppendSwitch("off-screen-rendering-enabled");
-	command_line->AppendSwitchWithValue("off-screen-frame-rate", "60");
-	command_line->AppendSwitch("enable-font-antialiasing");
-	command_line->AppendSwitch("enable-media-stream");
+	CommandLine->AppendSwitch("off-screen-rendering-enabled");
+	CommandLine->AppendSwitchWithValue("off-screen-frame-rate", "60");
+	CommandLine->AppendSwitch("enable-font-antialiasing");
+	CommandLine->AppendSwitch("enable-media-stream");
 
 	// Should we use the render settings that use less CPU?
 	if (CPURenderSettings)
 	{
-		command_line->AppendSwitch("disable-gpu");
-		command_line->AppendSwitch("disable-gpu-compositing");
-		command_line->AppendSwitch("enable-begin-frame-scheduling");
+		CommandLine->AppendSwitch("disable-gpu");
+		CommandLine->AppendSwitch("disable-gpu-compositing");
+		CommandLine->AppendSwitch("enable-begin-frame-scheduling");
 	}
 	else
 	{
 		// Enables things like CSS3 and WebGL
-		command_line->AppendSwitch("enable-gpu-rasterization");
-		command_line->AppendSwitch("enable-webgl");
-		command_line->AppendSwitch("disable-web-security");
+		CommandLine->AppendSwitch("enable-gpu-rasterization");
+		CommandLine->AppendSwitch("enable-webgl");
+		CommandLine->AppendSwitch("disable-web-security");
 	}
 
+	CommandLine->AppendSwitchWithValue("enable-blink-features", "HTMLImports");
 
+	if (AutoPlay)
+	{
+		CommandLine->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
+	}
+	
 	// Append more command line options here if you want
 	// Visit Peter Beverloo's site: http://peter.sh/experiments/chromium-command-line-switches/ for more info on the switches
 
 }
 
-void BluManager::doBluMessageLoop()
+void BluManager::DoBluMessageLoop()
 {
 	CefDoMessageLoopWork();
 }
 
-CefSettings BluManager::settings;
-CefMainArgs BluManager::main_args;
-bool BluManager::CPURenderSettings = true;
+CefSettings BluManager::Settings;
+CefMainArgs BluManager::MainArgs;
+bool BluManager::CPURenderSettings = false;
+bool BluManager::AutoPlay = true;

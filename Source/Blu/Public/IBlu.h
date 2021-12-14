@@ -2,7 +2,9 @@
 * (c) Aaron M. Shea 2014
 */
 #pragma once
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogBlu, Log, All);
 
 class IBlu : public IModuleInterface
 {
@@ -28,5 +30,4 @@ public:
 	{
 		return FModuleManager::Get().IsModuleLoaded("Blu");
 	}
-
 };

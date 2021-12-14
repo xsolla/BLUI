@@ -1,6 +1,6 @@
-#include "BluPrivatePCH.h"
-#include "BluManager.h"
-#include "Json.h"
+#include "BluBlueprintFunctionLibrary.h"
+#include "BluJsonObj.h"
+
 
 UBluBlueprintFunctionLibrary::UBluBlueprintFunctionLibrary(const class FObjectInitializer& PCIP)
 : Super(PCIP)
@@ -12,34 +12,34 @@ UBluEye* UBluBlueprintFunctionLibrary::NewBluEye(UObject* WorldContextObject)
 {
 
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	UBluEye* tempObject = Cast<UBluEye>(StaticConstructObject_Internal(UBluEye::StaticClass()));
+	UBluEye* Eye = NewObject<UBluEye>(WorldContextObject);
 
-	return tempObject;
+	return Eye;
 
 }
 
 UBluJsonObj* UBluBlueprintFunctionLibrary::NewBluJSONObj(UObject* WorldContextObject)
 {
 
-	UBluJsonObj* tempObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
-	tempObj->init("{}");
+	UBluJsonObj* JsonObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
+	JsonObj->Init("{}");
 	
-	return tempObj;
+	return JsonObj;
 
 }
 
 void UBluBlueprintFunctionLibrary::RunBluEventLoop()
 {
-	BluManager::doBluMessageLoop();
+	BluManager::DoBluMessageLoop();
 }
 
 UBluJsonObj* UBluBlueprintFunctionLibrary::ParseJSON(const FString& JSONString)
 {
 
-	UBluJsonObj* tempObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
-	tempObj->init(JSONString);
+	UBluJsonObj* JsonObj = NewObject<UBluJsonObj>(GetTransientPackage(), UBluJsonObj::StaticClass());
+	JsonObj->Init(JSONString);
 
-	return tempObj;
+	return JsonObj;
 
 }
 
@@ -47,15 +47,25 @@ FString UBluBlueprintFunctionLibrary::JSONToString(UBluJsonObj *ObjectToParse)
 {
 
 	// Create the JSON reader
-	FString returnString;
-	TSharedRef<TJsonWriter<TCHAR>> writer = TJsonWriterFactory<TCHAR>::Create(&returnString);
+	FString ReturnString;
+	TSharedRef<TJsonWriter<TCHAR>> writer = TJsonWriterFactory<TCHAR>::Create(&ReturnString);
 
 	// Convert the JSON object to an FString
-	FJsonSerializer::Serialize(ObjectToParse->getJsonObj().ToSharedRef(), writer);
+	FJsonSerializer::Serialize(ObjectToParse->GetJsonObj().ToSharedRef(), writer);
 
-	return returnString;
+	return ReturnString;
 
 }
+
+FCharacterEvent UBluBlueprintFunctionLibrary::ToKeyEvent(FKey Key)
+{
+	FModifierKeysState KeyState;
+
+	FCharacterEvent CharEvent = FCharacterEvent(Key.GetFName().ToString().ToUpper().GetCharArray()[0], KeyState, 0, 0);
+
+	return CharEvent;
+}
+
 
 
 FString UBluBlueprintFunctionLibrary::GameRootDirectory()

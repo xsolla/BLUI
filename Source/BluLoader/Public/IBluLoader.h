@@ -2,7 +2,9 @@
 * (c) Aaron M. Shea 2014
 */
 #pragma once
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogBluLoader, Log, All);
 
 class IBluLoader : public IModuleInterface
 {

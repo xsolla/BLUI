@@ -1,17 +1,16 @@
 [![release](https://img.shields.io/github/release/getnamo/BLUI.svg?style=flat-square)](https://github.com/getnamo/BLUI/releases)
 ![BLUI-logo](https://cloud.githubusercontent.com/assets/1334174/5969395/201a1202-a7f1-11e4-98a4-12bc6793f830.png)
+[![Github All Releases](https://img.shields.io/github/downloads/getnamo/BLUI/total.svg)](https://github.com/getnamo/BLUI/releases)
 
 ## Getnamo Fork Notes
 
-Fork made to support small additions and changes for certain use cases.
+A fork of BLUI that is kept relatively up to date.
+
+Latest release is updated to [CEF 80.0.3987.132](https://github.com/chromiumembedded/cef/tree/3987).
 
 To install check out the latest releases https://github.com/getnamo/BLUI/releases and drag and drop *Plugins* folder into your project root folder
 
-### Download and Fullscreen Support
-
-Contains changes to allow downloading of files via the inbuilt browser.
-
-Updated CEF build to 3.2556 to support fullscreen videos.
+Unreal thread: https://forums.unrealengine.com/community/released-projects/29036-blui-open-source-html5-js-css-hud-ui
 
 ### Convenience Blueprints
 
@@ -63,16 +62,21 @@ By default the actor has a BLUI resolution of 1000x1000, you can change this by 
 
 ### BluTickActor
 
+Since 4.0.0 - This actor is no longer needed. Ticking happens internally.
+
+Older verions:
 Instead of ticking in your level bp, I prefer to use a simple actor to do the ticking. Other convenience blueprints may spawn this as necessary so if you use those, you don't ever need to use this directly.
 
-## //End Fork Notes
+## Demo Project
 
-## HTML powered UI and HUD for Unreal Engine 4
-(Hit up the wiki for a quick start guide!)
+Thanks to @oivio we have the Demo project updated to the latest release. See https://github.com/getnamo/BLUI/releases/tag/3.4.0 for the 4.22 Demo project release ([BLUI-v3.4.0-UE4.22-DemoExamples.7z](https://github.com/getnamo/BLUI/releases/download/3.4.0/BLUI-v3.4.0-UE4.22-DemoExamples.7z))
 
-Do you use BLUI in your project? I'd really love it if you credit me and it! You can even use the [logo right here!](https://res.cloudinary.com/aaronshea/image/upload/v1423576170/BLUI-Transparent_eu582n.png)
+### Video of Demo project
 
-License: MIT
+[![Demo Project](https://img.youtube.com/vi/PRxO0yCO3Kk/0.jpg)](https://youtu.be/PRxO0yCO3Kk)
+
+Click on image to take you to video.
+
 
 What is it?
 ---------------------------------------
@@ -97,21 +101,14 @@ Re-generate your project's Visual Studio file and load up the editor. Then check
 
 Updating the CEF event loop
 ---------------------------------------
-~~You must call the `BluManager::doBluMessageLoop();` method every tick in order for the CEF process to update properly. To do this, override the default GameMode's Tick function and include the `Blu/Public/BluManager.h` header file. You can then call the appropriate method.~~
-
-As of now, you no longer need to do this. You can simply call a blueprint node to Tick the CEF loop every tick of the level blueprint.
+Some actor or level blueprint needs to call [RunBluEventLoop](https://github.com/getnamo/BLUI/blob/master/Source/Blu/Public/BluBlueprintFunctionLibrary.h#L18).
 
 
 Loading Local Files
 ---------------------------------------
-Set your default URL or use the "Load URL" node/method to load a URL that starts with `blui://` this will point to the directory root of the project or the game (if packaged). So if you wanted to load an HTML file from `YourProject/UI/file.html`, set the URL to `blui://UI/file.html`
+Set your default URL or use the "Load URL" node/method to load a URL that starts with `blui://` (or `local://`) this will point to the directory root of the project or the game (if packaged). So if you wanted to load an HTML file from `YourProject/UI/file.html`, set the URL to `blui://UI/file.html`
 
 
 HUD Example Blueprint
 ---------------------------------------
 Within the release, you'll find an ExampleHUD blueprint file, place this into your project's blueprints directory to try it out! (It's a simple UMG widget pre-configures to accept keyboard and mouse input, with a BluEye instance hooked up to a canvas)
-
-
-Shipping Your Game (Linux)
----------------------------------------
-Copy all contents of the Linux shipping files into your packaged game's `GameName/Binaries/{Linux}`, these are the required files for the Chromium process.

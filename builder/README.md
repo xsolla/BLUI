@@ -1,6 +1,8 @@
-### BLUI Build Script
+### BLUI CEF Chromium Build Script
 
-#### Windows Steps
+Current CEF building instructions: https://github.com/getnamo/blubrowser
+
+#### Archived - Windows Steps
 
 Requirements:
 ```

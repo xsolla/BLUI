@@ -12,71 +12,71 @@ public:
 
 	//// Get Values ////
 
-	/* Gets a String value for the key given */
+	/* Gets a String Value for the key given */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		FString getStringValue(const FString &index);
+	FString GetStringValue(const FString &Index);
 
-	/* Gets a Numerical value for the key given */
+	/* Gets a Numerical Value for the key given */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		float getNumValue(const FString &index);
+	float GetNumValue(const FString &Index);
 
-	/* Gets a Boolean value for the key given */
+	/* Gets a Boolean Value for the key given */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		bool getBooleanValue(const FString &index);
+	bool GetBooleanValue(const FString &Index);
 
-	/* Gets a Nested JSON Object value for the key given */
+	/* Gets a Nested JSON Object Value for the key given */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		UBluJsonObj* getNestedObject(const FString &index);
+	UBluJsonObj* GetNestedObject(const FString &Index);
 
 	//// Get Array Values ////
 
 	/* Gets an Array of floats or numbers for the key given */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		TArray<float> getNumArray(const FString &index);
+	TArray<float> GetNumArray(const FString &Index);
 
 	/* Gets an Array of booleans for the key given */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		TArray<bool> getBooleanArray(const FString &index);
+	TArray<bool> GetBooleanArray(const FString &Index);
 
 	/* Gets an Array of strings for the key given */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		TArray<FString> getStringArray(const FString &index);
+	TArray<FString> GetStringArray(const FString &Index);
 
 	//// Set Values ////
 
-	/* Sets or Adds a String value to this JSON object */
+	/* Sets or Adds a String Value to this JSON object */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		void setStringValue(const FString &value, const FString &index);
+	void SetStringValue(const FString &Value, const FString &Index);
 
-	/* Sets or Adds a Numerical value to this JSON object */
+	/* Sets or Adds a Numerical Value to this JSON object */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		void setNumValue(const float value, const FString &index);
+	void SetNumValue(const float Value, const FString &Index);
 
-	/* Sets or Adds a Boolean value to this JSON object */
+	/* Sets or Adds a Boolean Value to this JSON object */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		void setBooleanValue(const bool value, const FString &index);
+	void SetBooleanValue(const bool Value, const FString &Index);
 
-	/* Sets or Adds a Nested JSON Object value to this JSON object */
+	/* Sets or Adds a Nested JSON Object Value to this JSON object */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		void setNestedObject(UBluJsonObj *value, const FString &index);
+	void SetNestedObject(UBluJsonObj *Value, const FString &Index);
 
-	void init(const FString &dataString);
-	void setJsonObj(TSharedPtr<FJsonObject> NewJson);
+	void Init(const FString &dataString);
+	void SetJsonObj(TSharedPtr<FJsonObject> NewJson);
 	
-	TSharedPtr<FJsonObject> getJsonObj();
+	TSharedPtr<FJsonObject> GetJsonObj();
 	
 	// CUSTOM ADDED START
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		void setStringArray(const TArray<FString> &value, const FString &index);
+	void SetStringArray(const TArray<FString> &Value, const FString &Index);
 
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		void setBooleanArray(const TArray<bool> &value, const FString &index);
+	void SetBooleanArray(const TArray<bool> &Value, const FString &Index);
 
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		void setNumArray(const TArray<float> &value, const FString &index);
+	void SetNumArray(const TArray<float> &Value, const FString &Index);
 
 	UFUNCTION(BlueprintCallable, Category = "Blu")
-		void setObjectArray(const TArray<UBluJsonObj*> &value, const FString &index);
+	void SetObjectArray(const TArray<UBluJsonObj*> &Value, const FString &Index);
 	// CUSTOM ADDED END
 
 private:
@@ -84,7 +84,5 @@ private:
 	FString StrData;
 	TSharedPtr<FJsonObject> JsonParsed;
 
-	void doParseJson(TSharedRef<TJsonReader<TCHAR>> JsonReader);
-
-
+	void DoParseJson(TSharedRef<TJsonReader<TCHAR>> JsonReader);
 };

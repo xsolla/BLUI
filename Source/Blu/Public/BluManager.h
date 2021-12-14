@@ -1,36 +1,22 @@
 #pragma once
 
-#if PLATFORM_WINDOWS
-#include "WindowsHWrapper.h"
-#include "AllowWindowsPlatformTypes.h"
-#include "AllowWindowsPlatformAtomics.h"
-#endif
-#pragma push_macro("OVERRIDE")
-#undef OVERRIDE // cef headers provide their own OVERRIDE macro
-THIRD_PARTY_INCLUDES_START
-#include "include/cef_app.h"
-THIRD_PARTY_INCLUDES_END
-#pragma pop_macro("OVERRIDE")
-#if PLATFORM_WINDOWS
-#include "HideWindowsPlatformAtomics.h"
-#include "HideWindowsPlatformTypes.h"
-#endif
+#include "CEFInclude.h"
 
 class BLU_API BluManager : public CefApp
 {
+public:
 
-	public:
+	BluManager();
 
-		BluManager();
+	static void DoBluMessageLoop();
+	static CefSettings Settings;
+	static CefMainArgs MainArgs;
+	static bool CPURenderSettings;
+	static bool AutoPlay;
 
-		static void doBluMessageLoop();
-		static CefSettings settings;
-		static CefMainArgs main_args;
-		static bool CPURenderSettings;
+	virtual void OnBeforeCommandLineProcessing(const CefString& ProcessType,
+			CefRefPtr< CefCommandLine > CommandLine) override;
 
-	virtual void OnBeforeCommandLineProcessing(const CefString& process_type,
-			CefRefPtr< CefCommandLine > command_line) override;
-
-	IMPLEMENT_REFCOUNTING(BluManager)
-
+	IMPLEMENT_REFCOUNTING(BluManager);
 };
+

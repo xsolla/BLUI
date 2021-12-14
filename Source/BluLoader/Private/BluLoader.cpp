@@ -1,5 +1,11 @@
-#include "BluLoaderPrivatePCH.h"
+#include "IBluLoader.h"
+#include "CoreMinimal.h"
+#include "Misc/Paths.h"
 #include <string>
+
+#if PLATFORM_WINDOWS
+#include "Windows/WindowsPlatformProcess.h"
+#endif
 
 class FBluLoader : public IBluLoader
 {
