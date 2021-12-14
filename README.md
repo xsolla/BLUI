@@ -99,16 +99,8 @@ Then copy the `BLUI` folder into the "Plugins" folder within your **project** di
 
 Re-generate your project's Visual Studio file and load up the editor. Then check the plugin list to ensure it has been loaded!
 
-Updating the CEF event loop
----------------------------------------
-Some actor or level blueprint needs to call [RunBluEventLoop](https://github.com/getnamo/BLUI/blob/master/Source/Blu/Public/BluBlueprintFunctionLibrary.h#L18).
-
 
 Loading Local Files
 ---------------------------------------
-Set your default URL or use the "Load URL" node/method to load a URL that starts with `blui://` (or `local://`) this will point to the directory root of the project or the game (if packaged). So if you wanted to load an HTML file from `YourProject/UI/file.html`, set the URL to `blui://UI/file.html`
+Set your default URL or use the "Load URL" node/method to load a URL that starts with `local://` this will point to the Content/html directory root of the project or the game (if packaged). So if you wanted to load an HTML file from `YourProject/Content/html/UI/file.html`, set the URL to `local://UI/file.html`
 
-
-HUD Example Blueprint
----------------------------------------
-Within the release, you'll find an ExampleHUD blueprint file, place this into your project's blueprints directory to try it out! (It's a simple UMG widget pre-configures to accept keyboard and mouse input, with a BluEye instance hooked up to a canvas)
