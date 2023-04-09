@@ -6,7 +6,7 @@
 
 A fork of BLUI that is kept relatively up to date.
 
-Latest release is updated to [CEF 80.0.3987.132](https://github.com/chromiumembedded/cef/tree/3987).
+Latest release is updated to [CEF 90.0.4430.212](https://bitbucket.org/chromiumembedded/cef/src/4430/).
 
 To install check out the latest releases https://github.com/getnamo/BLUI-Unreal/releases and drag and drop *Plugins* folder into your project root folder
 
