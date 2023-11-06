@@ -2,6 +2,15 @@
 ![BLUI-logo](https://cloud.githubusercontent.com/assets/1334174/5969395/201a1202-a7f1-11e4-98a4-12bc6793f830.png)
 [![Github All Releases](https://img.shields.io/github/downloads/getnamo/BLUI/total.svg)](https://github.com/getnamo/BLUI/releases)
 
+## Immutable Fork Notes
+
+This is forked from https://github.com/getnamo/BLUI repository.
+
+We are only using this plugin with Unreal Engine versions 4.26, 4.27 and above, below Unreal Engine 5.0 (as we use inbuilt browser from Unreal Engine 5.0 onwards)
+
+We are using `Imtbl4.2` branch to maintain this plugin with the changes made as per our requirements. See https://github.com/immutable/BLUI-Unreal/tree/Imtbl4.2
+
+
 ## Getnamo Fork Notes
 
 A fork of BLUI that is kept relatively up to date.
