@@ -323,8 +323,6 @@ void UBluEye::LoadURLWithHeaders(const FString& newURL, TMap<FString, FString> h
 		headerMap.insert(std::make_pair(CefKey, CefValue));
 	}
 
-	Browser->GetMainFrame()->LoadURL(*FinalUrl);
-
 	request->SetHeaderMap(headerMap);
 
     /*
