@@ -1,4 +1,3 @@
-# Compiled source files for the engine to use
+.DS_Store
 Intermediate/*
 Binaries/*
-ThirdParty/cef/Win/*
