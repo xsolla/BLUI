@@ -55,7 +55,10 @@ void BrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> Browser)
 bool BrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> Browser, cef_log_severity_t Level, const CefString& Message, const CefString& source, int line)
 {
 	FString LogMessage = FString(Message.c_str());
-	LogEmitter->Broadcast(LogMessage);
+	if (LogEmitter != nullptr && LogEmitter->IsBound())
+	{
+		LogEmitter->Broadcast(LogMessage);
+	}
 	return true;
 }
 
@@ -67,14 +70,20 @@ void BrowserClient::OnFullscreenModeChange(CefRefPtr< CefBrowser > Browser, bool
 void BrowserClient::OnTitleChange(CefRefPtr< CefBrowser > Browser, const CefString& Title)
 {
 	FString TitleMessage = FString(Title.c_str());
-	LogEmitter->Broadcast(TitleMessage);
+	if (LogEmitter != nullptr && LogEmitter->IsBound())
+	{
+		LogEmitter->Broadcast(TitleMessage);
+	}
 }
 
 void BrowserClient::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
 {
 	FString AddressMessage = FString(url.c_str());
 	UE_LOG(LogTemp, Log, TEXT("URL changed. new url: %s"), *AddressMessage);
-	UrlChangeEmitter->Broadcast(AddressMessage);
+	if (UrlChangeEmitter != nullptr && UrlChangeEmitter->IsBound())
+	{
+		UrlChangeEmitter->Broadcast(AddressMessage);
+	}
 }
 
 void BrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward)
@@ -90,7 +99,10 @@ void BrowserClient::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFram
 void BrowserClient::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
 {
 	UE_LOG(LogTemp, Log, TEXT("OnLoadEnd:"));
-	LoadEndEmitter->Broadcast();
+	if (LoadEndEmitter != nullptr && LoadEndEmitter->IsBound())
+	{
+		LoadEndEmitter->Broadcast();
+	}
 }
 
 CefRefPtr<CefBrowser> BrowserClient::GetCEFBrowser()
@@ -119,7 +131,10 @@ bool BrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, CefR
 		else if (DataType == "double")
 			Data = FString::SanitizeFloat(Message->GetArgumentList()->GetDouble(1));
 
-		EventEmitter->Broadcast(Name, Data);
+		if (EventEmitter != nullptr && EventEmitter->IsBound())
+		{
+			EventEmitter->Broadcast(Name, Data);
+		}
 	}
 
 	return true;
@@ -207,7 +222,7 @@ void BrowserClient::OnDownloadUpdated(
 
 bool BrowserClient::OnBeforePopup(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, const CefString& TargetUrl, const CefString& TargetFrameName, WindowOpenDisposition TargetDisposition, bool UserGesture, const CefPopupFeatures& PopupFeatures, CefWindowInfo& WindowInfo, CefRefPtr<CefClient>& Client, CefBrowserSettings& Settings, CefRefPtr<CefDictionaryValue>& ExtraInfo, bool* NoJavascriptAccess)
 {
-	if (BeforePopupEmitter->IsBound())
+	if (BeforePopupEmitter != nullptr && BeforePopupEmitter->IsBound())
 	{
 		FString ResultURL = FString(TargetUrl.c_str());
 		FString ResultFrame = FString(Frame->GetURL().c_str());
