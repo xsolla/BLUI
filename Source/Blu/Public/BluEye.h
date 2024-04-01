@@ -141,6 +141,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FUrlChangeEvent UrlChangeEventEmitter;
 
+	UPROPERTY(BlueprintAssignable)
+	FLoadEndEvent LoadEndEventEmitter;
+
+	UPROPERTY(EditAnywhere, Category = Events, meta = (IsBindableEvent = "True"))
+	FBeforePopupEvent BeforePopupEmitter;
+
 	/** Trigger a key down event */
 	UFUNCTION(BlueprintCallable, Category = "Blu")
 	void KeyDown(FKeyEvent InKey);

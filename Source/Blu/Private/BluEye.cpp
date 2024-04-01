@@ -96,6 +96,8 @@ void UBluEye::Init()
 	ClientHandler->SetEventEmitter(&ScriptEventEmitter);
 	ClientHandler->SetLogEmitter(&LogEventEmitter);
 	ClientHandler->SetUrlChangeEmitter(&UrlChangeEventEmitter);
+	ClientHandler->SetLoadEndEmitter(&LoadEndEventEmitter);
+	ClientHandler->SetBeforePopupEmitter(&BeforePopupEmitter);
 
 	UE_LOG(LogBlu, Log, TEXT("Component Initialized"));
 	UE_LOG(LogBlu, Log, TEXT("Loading URL: %s"), *DefaultURL);

@@ -72,9 +72,25 @@ void BrowserClient::OnTitleChange(CefRefPtr< CefBrowser > Browser, const CefStri
 
 void BrowserClient::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
 {
-	UE_LOG(LogTemp, Log, TEXT("URL changed"));
 	FString AddressMessage = FString(url.c_str());
+	UE_LOG(LogTemp, Log, TEXT("URL changed. new url: %s"), *AddressMessage);
 	UrlChangeEmitter->Broadcast(AddressMessage);
+}
+
+void BrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward)
+{
+	UE_LOG(LogTemp, Log, TEXT("OnLoadingStateChange:"));
+}
+
+void BrowserClient::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transition_type)
+{
+	UE_LOG(LogTemp, Log, TEXT("OnLoadStart:"));
+}
+
+void BrowserClient::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode)
+{
+	UE_LOG(LogTemp, Log, TEXT("OnLoadEnd:"));
+	LoadEndEmitter->Broadcast();
 }
 
 CefRefPtr<CefBrowser> BrowserClient::GetCEFBrowser()
@@ -141,6 +157,15 @@ void BrowserClient::SetUrlChangeEmitter(FUrlChangeEvent* Emitter)
 	this->UrlChangeEmitter = Emitter;
 }
 
+void BrowserClient::SetLoadEndEmitter(FLoadEndEvent* Emitter)
+{
+	this->LoadEndEmitter = Emitter;
+}
+
+void BrowserClient::SetBeforePopupEmitter(FBeforePopupEvent* Emitter)
+{
+	this->BeforePopupEmitter = Emitter;
+}
 
 void BrowserClient::OnBeforeDownload(
 	CefRefPtr<CefBrowser> Browser,
@@ -178,5 +203,17 @@ void BrowserClient::OnDownloadUpdated(
 
 	//Example download cancel/pause etc, we just have to hijack this
 	//callback->Cancel();
+}
+
+bool BrowserClient::OnBeforePopup(CefRefPtr<CefBrowser> Browser, CefRefPtr<CefFrame> Frame, const CefString& TargetUrl, const CefString& TargetFrameName, WindowOpenDisposition TargetDisposition, bool UserGesture, const CefPopupFeatures& PopupFeatures, CefWindowInfo& WindowInfo, CefRefPtr<CefClient>& Client, CefBrowserSettings& Settings, CefRefPtr<CefDictionaryValue>& ExtraInfo, bool* NoJavascriptAccess)
+{
+	if (BeforePopupEmitter->IsBound())
+	{
+		FString ResultURL = FString(TargetUrl.c_str());
+		FString ResultFrame = FString(Frame->GetURL().c_str());
+		return BeforePopupEmitter->Execute(ResultURL, ResultFrame);
+	}
+
+	return false;
 }
 

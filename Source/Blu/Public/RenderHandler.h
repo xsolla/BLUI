@@ -28,13 +28,16 @@ class RenderHandler : public CefRenderHandler
 };
 
 // for manual render handler
-class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDownloadHandler, public CefDisplayHandler
+class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDownloadHandler, public CefDisplayHandler, public CefLoadHandler
 {
 
 	private:
 		FScriptEvent* EventEmitter;
 		FLogEvent* LogEmitter;
 		FUrlChangeEvent* UrlChangeEmitter;
+		FLoadEndEvent* LoadEndEmitter;
+		FBeforePopupEvent* BeforePopupEmitter;
+
 		CefRefPtr<RenderHandler> RenderHandlerRef;
 
 		// For lifespan
@@ -74,6 +77,11 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 			return this;
 		}
 
+		virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override
+		{
+			return this;
+		}
+
 		virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, 
 			CefRefPtr<CefFrame> Frame,
 			CefProcessId SourceProcess, 
@@ -88,6 +96,8 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 		void SetEventEmitter(FScriptEvent* Emitter);
 		void SetLogEmitter(FLogEvent* Emitter);
 		void SetUrlChangeEmitter(FUrlChangeEvent* Emitter);
+		void SetLoadEndEmitter(FLoadEndEvent* Emitter);
+		void SetBeforePopupEmitter(FBeforePopupEvent* Emitter);
 
 		//CefDownloadHandler
 		virtual void OnBeforeDownload(
@@ -113,9 +123,7 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 			CefRefPtr<CefClient>& Client,
 			CefBrowserSettings& Settings,
 			CefRefPtr<CefDictionaryValue>& ExtraInfo,
-			bool* NoJavascriptAccess) {
-			return false;
-		}
+			bool* NoJavascriptAccess);
 
 		// Lifespan methods
 		void OnAfterCreated(CefRefPtr<CefBrowser> Browser) override;
@@ -131,6 +139,21 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 
 		virtual void OnTitleChange(CefRefPtr< CefBrowser > Browser, const CefString& Title) override;
 		virtual void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
+
+		virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+			bool isLoading,
+			bool canGoBack,
+			bool canGoForward) override;
+
+
+		virtual void OnLoadStart(CefRefPtr<CefBrowser> browser,
+			CefRefPtr<CefFrame> frame,
+			TransitionType transition_type) override;
+
+
+		virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
+			CefRefPtr<CefFrame> frame,
+			int httpStatusCode) override;
 
 		CefRefPtr<CefBrowser> GetCEFBrowser();
 
