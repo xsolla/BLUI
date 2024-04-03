@@ -1,7 +1,21 @@
 #include "BluManager.h"
+#include "include/cef_version.h"
 
 BluManager::BluManager()
 {
+	// set user agent
+	auto chrome_version_major = cef_version_info(4);
+	auto chrome_version_minor = cef_version_info(5);
+	auto chrome_version_build = cef_version_info(6);
+	auto chrome_version_patch = cef_version_info(7);
+
+
+	FString ChromeVersion = FString::Printf(TEXT("Chrome/%d.%d.%d.%d"), chrome_version_major, chrome_version_minor, chrome_version_build, chrome_version_patch);
+	auto ProductVersion = FString::Printf(TEXT("%s/%s UnrealEngine/%s Mozilla/5.0 (Linux; Android 10; Redmi Note 7) AppleWebKit/537.36 (KHTML, like Gecko) %s Safari/537.36"), FApp::GetProjectName(), FApp::GetBuildVersion(), *FEngineVersion::Current().ToString(), *ChromeVersion);
+
+	cef_string_t user_agent = { 0 };
+	CefString(&user_agent).FromString(TCHAR_TO_UTF8(*ProductVersion));
+	Settings.user_agent = user_agent;
 }
 
 void BluManager::OnBeforeCommandLineProcessing(const CefString& process_type,
